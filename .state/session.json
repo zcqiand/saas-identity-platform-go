@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "project": "saas-identity-platform-go",
+  "current_task": "init 收官：Go 栈骨架 + 功能树 M/F 镜像 + 家族登记（X13=5111），等待第一个需求",
+  "done": [
+    "脚手架生成（profiles/go.toml + adapters/go），L0-L5 门禁全绿（2026-10-26）",
+    "go 1.27.3 装机（scoop），GOPROXY=goproxy.cn",
+    "function-tree 拆到 M/F 级：M00/M01/M04 镜像 BASE，状态全规划，I 级未登记",
+    "家族档案 saas.md + 细则 §6/§6.1 登记 X13=5111（18 仓）"
+  ],
+  "next": "第一个需求来了：/req 立档 → 按需求涉及的 F 段从 BASE mirror 登记 I 级（tree_change.py --apply，reason 引 REQ）→ red-first 实现",
+  "open_questions": [],
+  "dont": [
+    "不要改 .harness/stack.json 让门变松",
+    "不要给 skip 的测试挂功能 ID",
+    "不要在 HTTP handler 内写业务逻辑；不要吞错（_ = err）"
+  ],
+  "last_gate_passed_at": "2026-10-26"
+}

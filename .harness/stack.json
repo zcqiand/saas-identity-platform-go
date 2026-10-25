@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "suite_version": "0.6.0",
+  "project": "saas-identity-platform-go",
+  "stack": "go",
+  "gates": {
+    "L1": {
+      "name": "格式（gofmt）",
+      "cmd": [
+        "bash",
+        "scripts/gofmt-check.sh"
+      ],
+      "fix": "先确认 go 在 PATH（go version；gofmt 与 go 同在 GOROOT/bin，装了 go 就有）。cd 仓根跑 gofmt -w . 后重试；格式抖动说明编辑器插件与仓内 gofmt 版本不一致，以仓内工具链为准。"
+    },
+    "L2": {
+      "name": "静态检查（go vet）",
+      "cmd": [
+        "go",
+        "vet",
+        "./..."
+      ],
+      "fix": "先确认 go 在 PATH。逐条修复 go vet 报告；确属误报重构规避或在调用点写明理由，禁改门定义。"
+    },
+    "L3": {
+      "name": "编译",
+      "cmd": [
+        "go",
+        "build",
+        "./..."
+      ],
+      "fix": "先确认 go 在 PATH。编译错回代码修；首次拉依赖慢属正常（GOPROXY 国内建议设 goproxy.cn），反复卡死先探活（CPU+TCP）再报。"
+    },
+    "L4": {
+      "name": "测试",
+      "cmd": [
+        "go",
+        "test",
+        "./..."
+      ],
+      "fix": "先确认 go 在 PATH，再让测试变绿。"
+    }
+  },
+  "trace_cmd": [
+    "python",
+    "scripts/harness_trace.py"
+  ],
+  "trace_env": {},
+  "source_dirs": [
+    "internal"
+  ],
+  "test_dirs": [
+    "internal"
+  ]
+}

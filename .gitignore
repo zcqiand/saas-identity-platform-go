@@ -1,0 +1,23 @@
+/bin/
+*.exe
+*.test
+*.out
+coverage.*
+
+# .state 运行产物（可再生，不入库）；session.json 与 tree-change.applied.json 是台账，入库
+.state/trace.json
+.state/gate.json
+.state/gate.partial.json
+.state/alignment.json
+.state/tree-change.json
+!/.state/tree-change.applied.json
+
+# 可再生件（正式区/临时区纪律：过程件进 _work/，_work 整体不入库）
+node_modules/
+build/
+out/
+_work/
+
+# Claude 临时文件（.claude/ 技能与 agent 按家族先例入库；以下不入）
+.superpowers/
+.mcp.json
