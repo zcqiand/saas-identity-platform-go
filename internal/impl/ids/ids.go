@@ -4,7 +4,14 @@ package ids
 import (
 	crand "crypto/rand"
 	"fmt"
+	"regexp"
 )
+
+// uuidRe RFC 4122 任意版本形制（rails ApplicationController::UUID_RE 同形）。
+var uuidRe = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
+
+// IsValidUUID 路径参数 uuid 形制校验（不合格式 → 调用方转 400，防 PG 22P02 裸 500）。
+func IsValidUUID(s string) bool { return uuidRe.MatchString(s) }
 
 // NewUUID 生成 v4 UUID 字符串；系统熵源不可用属运行期灾难，直接 panic（禁吞错）。
 func NewUUID() string {

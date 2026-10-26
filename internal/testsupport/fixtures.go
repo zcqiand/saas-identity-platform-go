@@ -82,3 +82,109 @@ func SeedAuth(t *testing.T, db *gorm.DB) AuthFixtures {
 	}
 	return fx
 }
+
+// RootMenuID 菜单树根父 ID（rails SysMenu::ROOT_MENU_ID 同值：零 UUID）。
+const RootMenuID = "00000000-0000-0000-0000-000000000000"
+
+// MenuFixtures 一条 member→role→menus 授权链：root 目录（sort_order 2）+
+// 其子菜单（sort_order 1，验证仅根层排序）。
+type MenuFixtures struct {
+	Role      entity.SysRole
+	DirMenu   entity.SysMenu
+	ChildMenu entity.SysMenu
+}
+
+// SeedMenus 在 fx.Member 名下落授权链并返回菜单实体。
+func SeedMenus(t *testing.T, db *gorm.DB, fx AuthFixtures) MenuFixtures {
+	t.Helper()
+	now := time.Now()
+	mf := MenuFixtures{
+		Role: entity.SysRole{
+			Id:        NewUUID(),
+			TenantId:  fx.Tenant.Id,
+			ClientId:  fx.Client.ClientId,
+			RoleCode:  "go_role",
+			RoleName:  "Go Role",
+			IsPreset:  false,
+			Status:    1,
+			CreatedAt: now,
+			UpdatedAt: now,
+		},
+		DirMenu: entity.SysMenu{
+			Id:        NewUUID(),
+			ClientId:  fx.Client.ClientId,
+			ParentId:  RootMenuID,
+			Title:     "目录甲",
+			Type:      1,
+			Path:      Ptr("/dir"),
+			SortOrder: 2,
+			Status:    1,
+			CreatedAt: now,
+		},
+		ChildMenu: entity.SysMenu{
+			Id:        NewUUID(),
+			ClientId:  fx.Client.ClientId,
+			ParentId:  "",
+			Title:     "子菜单乙",
+			Type:      2,
+			Path:      Ptr("/dir/child"),
+			SortOrder: 1,
+			Status:    1,
+			CreatedAt: now,
+		},
+	}
+	// ChildMenu.ParentId 依赖 DirMenu.Id，单独赋值避开结构体字面量顺序
+	mf.ChildMenu.ParentId = mf.DirMenu.Id
+	seeds := []func() *gorm.DB{
+		func() *gorm.DB { return db.Create(&mf.Role) },
+		func() *gorm.DB { return db.Create(&mf.DirMenu) },
+		func() *gorm.DB { return db.Create(&mf.ChildMenu) },
+		func() *gorm.DB {
+			return db.Create(&entity.TenantMemberRole{MemberId: fx.Member.Id, RoleId: mf.Role.Id})
+		},
+		func() *gorm.DB {
+			return db.Create(&entity.SysRoleMenu{RoleId: mf.Role.Id, MenuId: mf.DirMenu.Id})
+		},
+		func() *gorm.DB {
+			return db.Create(&entity.SysRoleMenu{RoleId: mf.Role.Id, MenuId: mf.ChildMenu.Id})
+		},
+	}
+	for _, seed := range seeds {
+		if err := seed().Error; err != nil {
+			t.Fatalf("SeedMenus 种子失败: %v", err)
+		}
+	}
+	return mf
+}
+
+// SeedSecondTenant 给 fx.User 追加一个第二租户 + 指定 status 的 membership
+// （switch 链用：invited=2 可切、suspended=3 可切、disabled=0 不可切）。
+func SeedSecondTenant(t *testing.T, db *gorm.DB, fx AuthFixtures, memberStatus int16) entity.Tenant {
+	t.Helper()
+	now := time.Now()
+	tenant := entity.Tenant{
+		Id:        NewUUID(),
+		TenantKey: "go_t2_" + NewUUID()[:8],
+		Name:      "Go Second Tenant",
+		Status:    1,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	member := entity.TenantMember{
+		Id:        NewUUID(),
+		TenantId:  tenant.Id,
+		UserId:    fx.User.Id,
+		Status:    memberStatus,
+		CreatedAt: now.Add(time.Second), // 晚于首个 membership，Order(created_at) 稳定
+		UpdatedAt: now,
+	}
+	for _, seed := range []func() *gorm.DB{
+		func() *gorm.DB { return db.Create(&tenant) },
+		func() *gorm.DB { return db.Create(&member) },
+	} {
+		if err := seed().Error; err != nil {
+			t.Fatalf("SeedSecondTenant 种子失败: %v", err)
+		}
+	}
+	return tenant
+}

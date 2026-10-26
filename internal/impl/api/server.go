@@ -92,18 +92,6 @@ func (s *Server) ClientMenusMoveSysMenu(w http.ResponseWriter, r *http.Request, 
 func (s *Server) ClientMenusReorderSysMenus(w http.ResponseWriter, r *http.Request, clientId string, menuId string) {
 	notImplemented(w)
 }
-func (s *Server) MeWhoami(w http.ResponseWriter, r *http.Request) {
-	notImplemented(w)
-}
-func (s *Server) MeGetMyMenus(w http.ResponseWriter, r *http.Request, params genapi.MeGetMyMenusParams) {
-	notImplemented(w)
-}
-func (s *Server) MeListMyTenants(w http.ResponseWriter, r *http.Request, params genapi.MeListMyTenantsParams) {
-	notImplemented(w)
-}
-func (s *Server) MeSwitchTenant(w http.ResponseWriter, r *http.Request, tenantId string, params genapi.MeSwitchTenantParams) {
-	notImplemented(w)
-}
 func (s *Server) OAuthAuthorize(w http.ResponseWriter, r *http.Request) {
 	notImplemented(w)
 }

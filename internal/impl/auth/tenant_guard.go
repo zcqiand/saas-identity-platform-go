@@ -10,23 +10,38 @@ import (
 
 type claimsKeyType struct{}
 
-// Guard Bearer 守卫中间件：无/坏 token → 401 + WWW-Authenticate；合法 → claims 进
-// context 后放行（镜像 rails tenant_guard concern 的 token 面）。
+// Authenticate Bearer 守卫核心：无/坏 token → 401 + WWW-Authenticate 并返回 false；
+// 合法 → claims（生成 handler 入口直接调用——oapi-codegen 无中间件挂点，rails
+// include TenantGuard 的等价物是每个 protected handler 首行 s.auth(w, r)）。
+func Authenticate(w http.ResponseWriter, r *http.Request) (map[string]any, bool) {
+	raw := r.Header.Get("Authorization")
+	const prefix = "Bearer "
+	if !strings.HasPrefix(raw, prefix) {
+		unauthorized(w)
+		return nil, false
+	}
+	claims, err := Verify(strings.TrimPrefix(raw, prefix))
+	if err != nil {
+		unauthorized(w)
+		return nil, false
+	}
+	return claims, true
+}
+
+// Guard Bearer 守卫中间件（Authenticate + claims 进 context）。
 func Guard(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		raw := r.Header.Get("Authorization")
-		const prefix = "Bearer "
-		if !strings.HasPrefix(raw, prefix) {
-			unauthorized(w)
+		claims, ok := Authenticate(w, r)
+		if !ok {
 			return
 		}
-		claims, err := Verify(strings.TrimPrefix(raw, prefix))
-		if err != nil {
-			unauthorized(w)
-			return
-		}
-		next(w, r.WithContext(context.WithValue(r.Context(), claimsKeyType{}, claims)))
+		next(w, r.WithContext(WithClaims(r.Context(), claims)))
 	}
+}
+
+// WithClaims 把 claims 挂进 context（ClaimsFrom 的写入侧）。
+func WithClaims(ctx context.Context, claims map[string]any) context.Context {
+	return context.WithValue(ctx, claimsKeyType{}, claims)
 }
 
 func unauthorized(w http.ResponseWriter) {
