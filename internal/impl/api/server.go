@@ -34,9 +34,3 @@ func notImplemented(w http.ResponseWriter) {
 }
 
 // SessionsLogin / SessionsLogout 落地见 auth_impl.go（tag: auth 已接管）。
-func (s *Server) OAuthAuthorize(w http.ResponseWriter, r *http.Request) {
-	notImplemented(w)
-}
-func (s *Server) OAuthToken(w http.ResponseWriter, r *http.Request) {
-	notImplemented(w)
-}
