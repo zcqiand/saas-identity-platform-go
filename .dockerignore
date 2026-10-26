@@ -1,0 +1,13 @@
+# 镜像构建上下文瘦身：门禁/文档/状态目录不进 builder
+.github/
+.state/
+docs/
+scripts/
+_work/
+deploy/
+.env*
+!.env.example
+CHANGELOG.md
+PLAN.md
+README.md
+version-lock.json

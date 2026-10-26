@@ -1,0 +1,119 @@
+name: ci
+
+# saas-identity-platform-go (Go 1.27, net/http 标准库, 零三方依赖)
+# 家族原则（镜像 kotlin/laravel ci.yml 注释）：CI=门内静态+test + 镜像装配冒烟；
+# suite gate=全量（L0.5 deploy parity 在本地跑）。四门全工具链自带，无 wrapper 无 service。
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.27"
+          cache: true
+
+      - name: L1/L2/L4 — gofmt + vet + build + test
+        env:
+          # go test 无 env 消费（config 包只在显式调用时读 SERVER_PORT）；
+          # 与 .env.test 严格同值，防未来测试吃环境漂移
+          SERVER_PORT: "5111"
+        run: |
+          gofmt -l cmd internal | tee /tmp/fmt.out
+          [ ! -s /tmp/fmt.out ] || { echo "ERROR: gofmt 未格式化文件:" >&2; exit 1; }
+          go vet ./...
+          go build ./...
+          go test ./...
+
+      - name: 镜像装配冒烟 — build + run + /health 200
+        # prod 同款镜像直接拉起（连 Dockerfile 一起验）；/health 不消费 DB，
+        # 无 env 依赖除 SERVER_PORT（显式提供，suite 硬规则 §1）。
+        run: |
+          docker build -t go-smoke .
+          docker rm -f go-smoke >/dev/null 2>&1 || true
+          docker run -d --name go-smoke -p 127.0.0.1:5111:5111 \
+            --env SERVER_PORT=5111 go-smoke
+          ok=""
+          for i in $(seq 1 60); do
+            body="$(curl -fsS --max-time 3 http://127.0.0.1:5111/health 2>/dev/null || true)"
+            if [ -n "$body" ]; then
+              echo "→ /health: $body"
+              echo "$body" | grep -q '"ok":true' && ok=1 && break
+            fi
+            sleep 1
+          done
+          if [ -z "$ok" ]; then
+            echo "ERROR: go smoke /health 未 200（60s 上限），容器日志:" >&2
+            docker logs go-smoke 2>&1 | tail -40 >&2
+            docker rm -f go-smoke >/dev/null 2>&1 || true
+            exit 1
+          fi
+          # 405 守卫（REQ-2026-001 形态）：POST /health 拒绝
+          code="$(curl -fsS -o /dev/null -w '%{http_code}' -X POST --max-time 3 http://127.0.0.1:5111/health 2>/dev/null || true)"
+          echo "→ POST /health: $code"
+          if [ "$code" != "405" ]; then
+            echo "ERROR: POST /health 非 405" >&2
+            docker rm -f go-smoke >/dev/null 2>&1 || true
+            exit 1
+          fi
+          docker rm -f go-smoke >/dev/null 2>&1 || true
+
+  # 部署链（saas X13=5111；镜像 kotlin deploy job，tag push 触发）:
+  #   docker build & push（latest + tag 双份）→ VPS deploy 脚本拉镜像 + 渲染 nginx vhost
+  #   + 起容器 + /health 探活。本仓 env 契约只有 SERVER_PORT（无 secret），
+  #   go.env 由 deploy 脚本无条件自举字面量——不需要 envs 转发。
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/')
+    concurrency:
+      group: deploy-${{ github.event.repository.name }}-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
+            ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:${{ github.ref_name }}
+
+      - name: Pull image and restart container on VPS
+        uses: appleboy/ssh-action@v1
+        env:
+          NGINX_DOMAIN: ${{ vars.NGINX_DOMAIN }}
+          NGINX_CERT_BASENAME: ${{ vars.NGINX_CERT_BASENAME }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          envs: NGINX_DOMAIN,NGINX_CERT_BASENAME
+          script: |
+            # 自举: 首次部署无 /home/deploy/<repo>/ 时自动建 + 拉 deploy 脚本
+            set -e
+            REPO="${{ github.event.repository.name }}"
+            DEPLOY_DIR="/home/deploy/$REPO"
+            mkdir -p "$DEPLOY_DIR"
+            cd "$DEPLOY_DIR"
+            # 总是重拉最新 deploy 脚本（脚本 bug fix 立即生效）；nginx 模板由脚本自拉
+            curl -fsSL "https://raw.githubusercontent.com/zcqiand/${REPO}/refs/heads/master/deploy/${REPO}.sh" -o "$REPO.sh"
+            chmod +x "$REPO.sh"
+            sh "$REPO.sh" "${{ secrets.DOCKER_USERNAME }}" "${{ secrets.DOCKER_PASSWORD }}" "${{ github.ref_name }}"

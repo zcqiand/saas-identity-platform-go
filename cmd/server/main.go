@@ -16,7 +16,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("装配失败: %v", err)
 	}
-	addr := fmt.Sprintf("127.0.0.1:%d", port)
+	// 绑全接口 ":port"（REQ-2026-002）：容器里绑 127.0.0.1 的话 host 端口映射
+	// 打不进容器回环，deploy 探针必 connection refused。ktor 先例：
+	// embeddedServer(Netty, port=…) 无 host 参数 = Netty 默认 0.0.0.0，dev/prod 同姿态。
+	addr := fmt.Sprintf(":%d", port)
 	srv := server.New(addr)
 	slog.Info("listening", "addr", addr)
 	if err := srv.ListenAndServe(); err != nil {
