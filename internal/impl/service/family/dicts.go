@@ -65,6 +65,6 @@ func MenuTypeCode(s string) (int16, error) {
 	case "button":
 		return 3, nil
 	default:
-		return 0, errBadMenuType(s)
+		return 0, errBadMenuType()
 	}
 }

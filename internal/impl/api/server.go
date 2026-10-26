@@ -68,45 +68,9 @@ func (s *Server) AdminTenantsUpdateTenant(w http.ResponseWriter, r *http.Request
 }
 
 // SessionsLogin / SessionsLogout 落地见 auth_impl.go（tag: auth 已接管）。
-func (s *Server) ClientsGetClient(w http.ResponseWriter, r *http.Request, clientId string) {
-	notImplemented(w)
-}
-func (s *Server) ClientMenusListSysMenus(w http.ResponseWriter, r *http.Request, clientId string) {
-	notImplemented(w)
-}
-func (s *Server) ClientMenusCreateSysMenu(w http.ResponseWriter, r *http.Request, clientId string) {
-	notImplemented(w)
-}
-func (s *Server) ClientMenusDeleteSysMenu(w http.ResponseWriter, r *http.Request, clientId string, menuId string) {
-	notImplemented(w)
-}
-func (s *Server) ClientMenusGetSysMenu(w http.ResponseWriter, r *http.Request, clientId string, menuId string) {
-	notImplemented(w)
-}
-func (s *Server) ClientMenusUpdateSysMenu(w http.ResponseWriter, r *http.Request, clientId string, menuId string) {
-	notImplemented(w)
-}
-func (s *Server) ClientMenusMoveSysMenu(w http.ResponseWriter, r *http.Request, clientId string, menuId string) {
-	notImplemented(w)
-}
-func (s *Server) ClientMenusReorderSysMenus(w http.ResponseWriter, r *http.Request, clientId string, menuId string) {
-	notImplemented(w)
-}
 func (s *Server) OAuthAuthorize(w http.ResponseWriter, r *http.Request) {
 	notImplemented(w)
 }
 func (s *Server) OAuthToken(w http.ResponseWriter, r *http.Request) {
-	notImplemented(w)
-}
-func (s *Server) TenantApplicationsListTenantApplications(w http.ResponseWriter, r *http.Request, tenantId string, params genapi.TenantApplicationsListTenantApplicationsParams) {
-	notImplemented(w)
-}
-func (s *Server) TenantApplicationsSubscribeTenantApplication(w http.ResponseWriter, r *http.Request, tenantId string) {
-	notImplemented(w)
-}
-func (s *Server) TenantApplicationsRemoveTenantApplication(w http.ResponseWriter, r *http.Request, tenantId string, clientId string) {
-	notImplemented(w)
-}
-func (s *Server) TenantApplicationsUpdateTenantApplication(w http.ResponseWriter, r *http.Request, tenantId string, clientId string) {
 	notImplemented(w)
 }

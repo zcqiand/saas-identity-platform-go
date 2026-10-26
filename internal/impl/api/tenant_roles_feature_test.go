@@ -157,6 +157,10 @@ func TestRoleMenusSetListClear(t *testing.T) {
 	role := createRole(t, mux, tok, fx, "menus", false)
 	roleID := role["id"].(string)
 	m1, m2 := testsupport.NewUUID(), testsupport.NewUUID()
+	// 断言按字典序，随机 UUID 先归位（m1<=m2），避免用例随碰运气通过
+	if m1 > m2 {
+		m1, m2 = m2, m1
+	}
 	for _, mid := range []string{m1, m2} {
 		if err := tx.Create(&entity.SysMenu{
 			Id: mid, ClientId: fx.Client.ClientId, ParentId: testsupport.RootMenuID,
