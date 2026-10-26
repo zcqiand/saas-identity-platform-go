@@ -33,40 +33,6 @@ func notImplemented(w http.ResponseWriter) {
 	_ = json.NewEncoder(w).Encode(map[string]string{"code": "NOT_IMPLEMENTED"})
 }
 
-func (s *Server) AdminClientsListClients(w http.ResponseWriter, r *http.Request, params genapi.AdminClientsListClientsParams) {
-	notImplemented(w)
-}
-func (s *Server) AdminClientsCreateClient(w http.ResponseWriter, r *http.Request) {
-	notImplemented(w)
-}
-func (s *Server) AdminClientsDeleteClient(w http.ResponseWriter, r *http.Request, clientId string) {
-	notImplemented(w)
-}
-func (s *Server) AdminClientsGetClient(w http.ResponseWriter, r *http.Request, clientId string) {
-	notImplemented(w)
-}
-func (s *Server) AdminClientsUpdateClient(w http.ResponseWriter, r *http.Request, clientId string) {
-	notImplemented(w)
-}
-func (s *Server) AdminClientsSetClientStatus(w http.ResponseWriter, r *http.Request, clientId string) {
-	notImplemented(w)
-}
-func (s *Server) AdminTenantsListTenants(w http.ResponseWriter, r *http.Request, params genapi.AdminTenantsListTenantsParams) {
-	notImplemented(w)
-}
-func (s *Server) AdminTenantsCreateTenant(w http.ResponseWriter, r *http.Request) {
-	notImplemented(w)
-}
-func (s *Server) AdminTenantsDeleteTenant(w http.ResponseWriter, r *http.Request, id string) {
-	notImplemented(w)
-}
-func (s *Server) AdminTenantsGetTenant(w http.ResponseWriter, r *http.Request, id string) {
-	notImplemented(w)
-}
-func (s *Server) AdminTenantsUpdateTenant(w http.ResponseWriter, r *http.Request, id string) {
-	notImplemented(w)
-}
-
 // SessionsLogin / SessionsLogout 落地见 auth_impl.go（tag: auth 已接管）。
 func (s *Server) OAuthAuthorize(w http.ResponseWriter, r *http.Request) {
 	notImplemented(w)
