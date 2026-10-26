@@ -1,0 +1,5 @@
+# Windows core.autocrlf=true 下保 LF：
+# *.sh 给 bash（CRLF 直接炸：「\r: command not found」）
+# *.go 给 gofmt（CRLF 会被 gofmt -l 判未格式化，L1 假红）
+*.sh text eol=lf
+*.go text eol=lf
