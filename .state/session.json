@@ -1,19 +1,21 @@
 {
   "schema": 1,
   "project": "saas-identity-platform-go",
-  "current_task": "init 收官：Go 栈骨架 + 功能树 M/F 镜像 + 家族登记（X13=5111），等待第一个需求",
+  "current_task": "REQ-2026-001 健康检查 + 端口装配最小切片已验收（2026-10-26）：red-first 实现，live 探针过，L0-L5 全绿，tag 已打",
   "done": [
-    "脚手架生成（profiles/go.toml + adapters/go），L0-L5 门禁全绿（2026-10-26）",
-    "go 1.27.3 装机（scoop），GOPROXY=goproxy.cn",
-    "function-tree 拆到 M/F 级：M00/M01/M04 镜像 BASE，状态全规划，I 级未登记",
-    "家族档案 saas.md + 细则 §6/§6.1 登记 X13=5111（18 仓）"
+    "REQ-2026-001 立档（澄清表含「基础设施端点不挂 fn ID 不动树」——依 ktor REQ-2026-001/003 台账先例，人裁可否决）",
+    "red-first：测试先行（config 4 例 + server 2 例），编译红证据后实现",
+    "internal/config（SERVER_PORT fail-fast，禁兜底）+ internal/server（GET /health → {\"ok\":true,\"mode\":\"go\"}，405 守卫）+ cmd/server 组合根",
+    "实机抓真 bug：server.New() 原未接 Addr，http.Server 零值落 :80 bind 拒；修为 New(addr)",
+    "live 探针：GET 200 {\"mode\":\"go\",\"ok\":true} / POST 405 / 缺 SERVER_PORT exit 1",
+    "锚点包 internal/harness 删除（AC-5）；全门 L0-L5 绿（16 条目 0 软告警）"
   ],
-  "next": "第一个需求来了：/req 立档 → 按需求涉及的 F 段从 BASE mirror 登记 I 级（tree_change.py --apply，reason 引 REQ）→ red-first 实现",
+  "next": "等 lab-go 复刻收口后随下批需求；首个 API 需求时人裁 Go codegen 工具（profiles/codegen.md go 行）",
   "open_questions": [],
   "dont": [
     "不要改 .harness/stack.json 让门变松",
-    "不要给 skip 的测试挂功能 ID",
-    "不要在 HTTP handler 内写业务逻辑；不要吞错（_ = err）"
+    "http.Server 零值 Addr 落 :80——装配必须显式传 addr（REQ-2026-001 T-2 实机指纹）",
+    "不要给 skip 的测试挂功能 ID"
   ],
   "last_gate_passed_at": "2026-10-26"
 }
