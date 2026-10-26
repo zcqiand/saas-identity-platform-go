@@ -1,7 +1,7 @@
 # 未来开发计划
 
 - [ ] 下一个业务需求（REQ 立档 → 涉及 F 段从 BASE mirror 登记 I 级 → red-first）
-- [ ] 首个 API 面需求：人裁 Go codegen 工具（候选 oapi-codegen / 自研 manifest，见 suite `profiles/codegen.md` go 行），接 shared TypeSpec 契约生成物
+- [ ] 首个 API 面需求：接 shared TypeSpec 契约生成物（codegen 工具已人裁 **oapi-codegen** 2026-10-26，见 suite `profiles/codegen.md` go 行；server 生成模式与实体层方案接线时定）
 - [ ] PG/JWT env 接线时进 `<family>-shared` family-env.json members/scope
 - [ ] 书稿章节映射补齐（README「配套书籍及章节映射」）
 
