@@ -23,3 +23,13 @@ func Port() (int, error) {
 	}
 	return port, nil
 }
+
+// DatabaseURL 读取 DATABASE_URL（REQ-2026-003：GORM 连家族 PG 三库的入口，
+// dev=saas_dev / test=saas_test / prod 由 deploy env-file 注入）。
+func DatabaseURL() (string, error) {
+	raw := os.Getenv("DATABASE_URL")
+	if raw == "" {
+		return "", fmt.Errorf("缺少环境变量 DATABASE_URL（全集见 .env.example；禁默认值兜底）")
+	}
+	return raw, nil
+}

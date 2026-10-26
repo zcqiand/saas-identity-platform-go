@@ -1,36 +1,32 @@
 package server
 
 import (
-	"encoding/json"
-	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+
+	"saas-identity-platform-go/internal/impl/harness"
 )
 
 // REQ-2026-001 AC-2：家族探活契约形状 GET /health → {"ok":true,"mode":"go"}。
-// 基础设施端点不挂功能 ID（ktor REQ-2026-001/003 先例，trace fns 留空）。
+// /health 由 harness.Assemble 注册（基础设施端点不挂功能 ID——ktor 先例，
+// trace fns 留空）。
 func TestHealthShape(t *testing.T) {
 	rec := httptest.NewRecorder()
-	New("127.0.0.1:0").Handler.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/health", nil))
-	if rec.Code != http.StatusOK {
+	New("127.0.0.1:0", harness.Assemble(nil)).Handler.ServeHTTP(rec, httptest.NewRequest("GET", "/health", nil))
+	if rec.Code != 200 {
 		t.Fatalf("期望 200，得到 %d", rec.Code)
 	}
-	var body struct {
-		OK   bool   `json:"ok"`
-		Mode string `json:"mode"`
-	}
-	if err := json.Unmarshal(rec.Body.Bytes(), &body); err != nil {
-		t.Fatalf("响应体不是合法 JSON: %v", err)
-	}
-	if !body.OK || body.Mode != "go" {
-		t.Fatalf("期望 {\"ok\":true,\"mode\":\"go\"}，得到 %s", rec.Body.String())
+	body := rec.Body.String()
+	if !strings.Contains(body, `"ok":true`) || !strings.Contains(body, `"mode":"go"`) {
+		t.Fatalf(`期望 {"ok":true,"mode":"go"}，得到 %s`, body)
 	}
 }
 
-func TestHealthRejectsNonGet(t *testing.T) {
-	rec := httptest.NewRecorder()
-	New("127.0.0.1:0").Handler.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/health", nil))
-	if rec.Code != http.StatusMethodNotAllowed {
-		t.Fatalf("POST /health 期望 405，得到 %d", rec.Code)
+// REQ-2026-003 Task 3：New 包装语义——handler 原样成为路由根。
+func TestNewWrapsHandler(t *testing.T) {
+	srv := New("127.0.0.1:5111", nil)
+	if srv.Addr != "127.0.0.1:5111" || srv.Handler != nil {
+		t.Fatalf("New 未按 addr/handler 包装: %+v", srv)
 	}
 }

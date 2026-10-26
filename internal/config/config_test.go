@@ -35,3 +35,23 @@ func TestPortOutOfRangeRejected(t *testing.T) {
 		t.Fatal("超出 1-65535 的端口应返回错误")
 	}
 }
+
+// REQ-2026-003 Task 3：DATABASE_URL 缺失必须 fail-fast（禁默认值兜底）。
+func TestDatabaseURLMissingFailsFast(t *testing.T) {
+	t.Setenv("DATABASE_URL", "")
+	if _, err := DatabaseURL(); err == nil {
+		t.Fatal("DATABASE_URL 为空时应返回错误（fail-fast），而不是兜底连接串")
+	}
+}
+
+func TestDatabaseURLPassthrough(t *testing.T) {
+	const dsn = "postgresql://postgres:postgres@127.0.0.1:54321/saas_dev"
+	t.Setenv("DATABASE_URL", dsn)
+	got, err := DatabaseURL()
+	if err != nil {
+		t.Fatalf("合法连接串不应报错: %v", err)
+	}
+	if got != dsn {
+		t.Fatalf("期望 %q，得到 %q", dsn, got)
+	}
+}
