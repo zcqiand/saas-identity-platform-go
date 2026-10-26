@@ -1,0 +1,6 @@
+{
+  "version_lock": {
+    "go": "1.25（go.mod 指令版；本机工具链 1.27.3，scoop 装机，GOPROXY=goproxy.cn）",
+    "dependencies": "零三方依赖——禁引入 lock 外的库；四门（gofmt/vet/build/test）全走工具链自带命令"
+  }
+}
