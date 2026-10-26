@@ -5,7 +5,7 @@
 | 提出人 | zcqiand |
 | 提出日期 | 2026-10-27 |
 | 优先级 | P1 |
-| 状态 | 开发中 |
+| 状态 | 已交付（2026-10-27，v0.2.0-20261027） |
 | 关联 ADR | — |
 
 ## 1. 需求描述
@@ -24,10 +24,10 @@
 
 | 编号 | 场景（给定） | 操作（当） | 面预期（则） |
 |---|---|---|---|
-| AC-1 | shared openapi 47 op | 跑 go 仓 route-parity 契约门 | 47 条路由全挂接、无契约外路由（allowlist 仅 GET /health） |
-| AC-2 | 本机 PG saas_dev | 跑 strict 幂等门 | 双脚本复放字节幂等，三生成区与 HEAD 一致 |
-| AC-3 | saas_test 种子在位 | 跑 go test ./... | Feature 链全绿且事务回滚不污染（rails L4 交叉绿） |
-| AC-4 | 本机起 saas-go :5111 连 saas_dev | login→me→menus 冒烟 | live 探针全 200，形状与 rails 不可区分 |
+| AC-1 | shared openapi 47 op | 跑 go 仓 route-parity 契约门 | ✅ 47 条路由全挂接、无契约外路由（allowlist 仅 GET /health） |
+| AC-2 | 本机 PG saas_dev | 跑 strict 幂等门 | ✅ 双脚本复放字节幂等，三生成区与 HEAD 一致（check_codegen_idempotent.py --strict exit 0） |
+| AC-3 | saas_test 种子在位 | 跑 go test ./... | ✅ Feature 链全绿且事务回滚不污染（suite gate L4 exit 0） |
+| AC-4 | 本机起 saas-go :5111 连 saas_dev | login→me→menus 冒烟 | ✅ live 探针全 200；CT live 2-way（springboot,go）201/201 收敛 |
 
 ## 3. 任务拆解
 

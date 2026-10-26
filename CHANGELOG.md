@@ -2,6 +2,16 @@
 
 格式照 `v<MAJOR>.<MINOR>.<PATCH>-<YYYYMMDD>`（tag 即放行：全量回归绿后打 tag）。
 
+## v0.2.0-20261027 (2026-10-27)
+
+REQ-2026-003 全量业务切片（shared 契约 47 op / 11 tag 全实现）：
+
+- codegen 双链：oapi-codegen v2.8.1 std-http-server 生成区（internal/gen/api）+ GORM DB-First entity 12 表（internal/gen/entity），双幂等门（route-parity + codegen strict）接管
+- 基础件：render.Camelize/WriteJSON、errors.{code,message} 映射、auth（HS256 签验/密码校验/守卫+租户缝）、testsupport（单事务 Feature 隔离）
+- 11 tag 全落地：auth（登录/登出）、me（whoami/tenants/menus/switch）、tenant-members（CRUD+邀请+状态双写+授权）、tenant-roles、tenant-role-menus（行锁差量）、client-menus、tenant-applications（订阅校验链）、admin-clients、admin-tenants、oauth（authorize 码流 + authorization_code/refresh_token 双 grant、code 一次性消费）、clients 匿名元数据
+- env 六键契约（SERVER_PORT/DATABASE_URL/JWT_* 四件）三件套严格相等 + deploy 自举同步
+- contract-test 仓 TARGETS 注册 go:5111，live 2-way（springboot 参照）收敛
+
 ## v0.1.1-20261026 (2026-10-26)
 
 REQ-2026-002 进 prod deploy 链（ktor/laravel 先例五件套）：
@@ -9,7 +19,6 @@ REQ-2026-002 进 prod deploy 链（ktor/laravel 先例五件套）：
 - deploy 五件套：Dockerfile（golang:1.27-alpine builder + CGO_ENABLED=0 静态二进制，alpine:3 runtime）+ .dockerignore + ci.yml（fmt/vet/build/test + 镜像装配冒烟 build+run+/health+405 守卫；deploy job tag 触发）+ deploy/ 脚本 + nginx vhost 模板 + setup-vps.sh
 - 绑定地址 `127.0.0.1` → `:port`（容器可达；ktor Netty 默认 0.0.0.0 先例）
 - `https://{domain}` 上线（X13={port}，host=container 单层映射，ADR-0018）
-
 
 ## v0.1.0-20261026 (2026-10-26)
 
