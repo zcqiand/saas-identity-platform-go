@@ -92,7 +92,8 @@ func (s *TenantApplicationsService) Subscribe(tenantID, clientID string, expireT
 	return AppDTO(&app), nil
 }
 
-// Update 只动 present 的字段（rails blank 语义：status=0 不应用，非 0 才写）。
+// Update 只动 present 的字段（status 契约必填 int32，0=disabled 无条件应用——
+// springboot oracle 语义 CT I76；rails blank 0 不写是已定性家族偏差，go 不随）。
 func (s *TenantApplicationsService) Update(tenantID, clientID string, status *int32, expireTime *time.Time) (map[string]any, error) {
 	var app entity.TenantApplication
 	err := s.DB.Where("tenant_id = ? AND client_id = ?", tenantID, clientID).First(&app).Error
@@ -103,7 +104,7 @@ func (s *TenantApplicationsService) Update(tenantID, clientID string, status *in
 		return nil, err
 	}
 	updates := map[string]any{}
-	if status != nil && *status != 0 {
+	if status != nil {
 		updates["status"] = *status
 	}
 	if expireTime != nil {
@@ -114,7 +115,7 @@ func (s *TenantApplicationsService) Update(tenantID, clientID string, status *in
 			Updates(updates).Error; err != nil {
 			return nil, err
 		}
-		if status != nil && *status != 0 {
+		if status != nil {
 			app.Status = int16(*status)
 		}
 		if expireTime != nil {

@@ -44,6 +44,19 @@ func TestAdminClientsCrudLifecycle(t *testing.T) {
 		t.Fatalf("clientId 回显不符: %v", created["clientId"])
 	}
 
+	// 缺必填 → 400（springboot @NotNull 契约面，CT I64：空 body/缺字段必须 400 不落库）
+	rec = doJSON(mux, http.MethodPost, base, tok, map[string]any{})
+	if rec.Code != 400 {
+		t.Fatalf("空 body 创建应 400，得 %d %s", rec.Code, rec.Body.String())
+	}
+	rec = doJSON(mux, http.MethodPost, base, tok, map[string]any{
+		"clientId": "go-admin-app-x", "clientName": "缺 redirectUris",
+		"clientSecret": "sec-x", "grantTypes": "password",
+	})
+	if rec.Code != 400 {
+		t.Fatalf("缺 redirectUris 创建应 400，得 %d %s", rec.Code, rec.Body.String())
+	}
+
 	// 列表信封
 	rec = doJSON(mux, http.MethodGet, base+"?page=0&pageSize=50", tok, nil)
 	if rec.Code != 200 {
@@ -79,11 +92,12 @@ func TestAdminClientsCrudLifecycle(t *testing.T) {
 		t.Fatalf("grantTypes 应被忽略，得 %v", upd["grantTypes"])
 	}
 
-	// 状态：present 非 0 → 应用；0 → 不变（rails present? blank 语义）
+	// 状态：status 无条件应用（0=disabled；springboot oracle 语义，CT I49 往返；
+	// rails present? blank 0 不写是已定性家族偏差，go 随 oracle）
 	rec = doJSON(mux, http.MethodPatch, base+"/go-admin-app-1/status", tok,
 		map[string]any{"status": 0})
-	if rec.Code != 200 || decodeBody(rec)["status"] != float64(1) {
-		t.Fatalf("status=0 应不变（得 %d %s）", rec.Code, rec.Body.String())
+	if rec.Code != 200 || decodeBody(rec)["status"] != float64(0) {
+		t.Fatalf("status=0 应应用（disabled），得 %d %s", rec.Code, rec.Body.String())
 	}
 	rec = doJSON(mux, http.MethodPatch, base+"/go-admin-app-1/status", tok,
 		map[string]any{"status": 2})

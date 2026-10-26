@@ -82,7 +82,20 @@ func positiveOr(v *int32, def int32) int32 {
 }
 
 // Create 创建应用：200 非 201（家族口径）；status=1。
+// Create 必填五件校验（clientId/clientName/clientSecret/grantTypes/redirectUris，
+// springboot CreateOAuthClientRequest @NotNull 契约面镜像，CT I64：空 body 必须 400）。
 func (s *AdminClientsService) Create(in ClientCreateInput) (map[string]any, error) {
+	for _, fv := range [][2]string{
+		{"clientId", in.ClientID},
+		{"clientName", in.ClientName},
+		{"clientSecret", in.ClientSecret},
+		{"grantTypes", in.GrantTypes},
+		{"redirectUris", in.RedirectUris},
+	} {
+		if fv[1] == "" {
+			return nil, familyerrors.ErrBadRequest(fv[0] + ": must not be blank")
+		}
+	}
 	client := entity.OauthClient{
 		Id:                   ids.NewUUID(),
 		ClientId:             in.ClientID,
@@ -139,19 +152,18 @@ func (s *AdminClientsService) Update(clientID string, clientName, redirectUris, 
 	return s.Get(client.ClientId)
 }
 
-// SetStatus body {status}：0 是 blank 不应用（rails present? 语义），非 0 才写。
+// SetStatus body {status}：无条件应用（0=disabled；springboot oracle 语义，CT I49
+// active→disabled 往返。rails present? blank 0 不写是已定性家族偏差，go 不随）。
 func (s *AdminClientsService) SetStatus(clientID string, status int32) (map[string]any, error) {
 	client, err := s.findClient(clientID)
 	if err != nil {
 		return nil, err
 	}
-	if status != 0 {
-		if err := s.DB.Model(&entity.OauthClient{}).Where("id = ?", client.Id).
-			Updates(map[string]any{"status": status, "updated_at": time.Now()}).Error; err != nil {
-			return nil, err
-		}
-		client.Status = int16(status)
+	if err := s.DB.Model(&entity.OauthClient{}).Where("id = ?", client.Id).
+		Updates(map[string]any{"status": status, "updated_at": time.Now()}).Error; err != nil {
+		return nil, err
 	}
+	client.Status = int16(status)
 	return ClientDTO(client), nil
 }
 

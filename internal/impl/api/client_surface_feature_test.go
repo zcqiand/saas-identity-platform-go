@@ -185,11 +185,16 @@ func TestTenantApplicationsLifecycle(t *testing.T) {
 		t.Fatal("重复订阅 400 应带 clean message")
 	}
 
-	// 更新：status=2 应用（注意 rails blank 语义：0 不应用，非 0 才写）
+	// 更新：status 无条件应用（springboot oracle 语义，CT I76：0=disabled 必生效）
 	rec = doJSON(mux, http.MethodPatch, base+"/"+fx.Client.ClientId, tok,
 		map[string]any{"status": 2})
 	if rec.Code != 200 || decodeBody(rec)["status"] != float64(2) {
 		t.Fatalf("更新订阅应 200/status 2，得 %d %s", rec.Code, rec.Body.String())
+	}
+	rec = doJSON(mux, http.MethodPatch, base+"/"+fx.Client.ClientId, tok,
+		map[string]any{"status": 0})
+	if rec.Code != 200 || decodeBody(rec)["status"] != float64(0) {
+		t.Fatalf("订阅 status=0 应应用（disabled），得 %d %s", rec.Code, rec.Body.String())
 	}
 
 	// 移除：204 且幂等（行不存在也 204）

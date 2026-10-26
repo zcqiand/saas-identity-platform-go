@@ -26,7 +26,7 @@ const oauthBase = "/api/v1/oauth"
 
 // fn: M04.F03.I01
 // fn: M04.F03.I02
-// fn: M04.F03.I03
+// （旧 I03 已并入 I02，树上无独立行——token 双 grant 都在 I02 断言）
 func TestOauthAuthorizeAndTokenGrants(t *testing.T) {
 	mux, fx, _ := featureMux(t)
 	tok := loginForToken(t, mux, fx)
