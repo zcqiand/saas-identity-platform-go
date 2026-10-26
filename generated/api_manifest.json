@@ -1,0 +1,469 @@
+{
+    "schema": 1,
+    "operations": [
+        {
+            "operationId": "AdminClients_createClient",
+            "method": "POST",
+            "path": "/api/v1/admin/clients",
+            "tag": "admin-clients",
+            "requestSchema": "CreateOAuthClientRequest",
+            "responseSchema": "OAuthClient",
+            "requiredFields": [
+                "clientId",
+                "clientName",
+                "clientSecret",
+                "grantTypes",
+                "redirectUris"
+            ]
+        },
+        {
+            "operationId": "AdminClients_deleteClient",
+            "method": "DELETE",
+            "path": "/api/v1/admin/clients/{clientId}",
+            "tag": "admin-clients",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "AdminClients_getClient",
+            "method": "GET",
+            "path": "/api/v1/admin/clients/{clientId}",
+            "tag": "admin-clients",
+            "requestSchema": null,
+            "responseSchema": "OAuthClient",
+            "requiredFields": []
+        },
+        {
+            "operationId": "AdminClients_listClients",
+            "method": "GET",
+            "path": "/api/v1/admin/clients",
+            "tag": "admin-clients",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "AdminClients_setClientStatus",
+            "method": "PATCH",
+            "path": "/api/v1/admin/clients/{clientId}/status",
+            "tag": "admin-clients",
+            "requestSchema": null,
+            "responseSchema": "OAuthClient",
+            "requiredFields": []
+        },
+        {
+            "operationId": "AdminClients_updateClient",
+            "method": "PATCH",
+            "path": "/api/v1/admin/clients/{clientId}",
+            "tag": "admin-clients",
+            "requestSchema": "UpdateOAuthClientRequest",
+            "responseSchema": "OAuthClient",
+            "requiredFields": []
+        },
+        {
+            "operationId": "AdminTenants_createTenant",
+            "method": "POST",
+            "path": "/api/v1/admin/tenants",
+            "tag": "admin-tenants",
+            "requestSchema": "CreateTenantRequest",
+            "responseSchema": "Tenant",
+            "requiredFields": [
+                "tenantKey",
+                "name"
+            ]
+        },
+        {
+            "operationId": "AdminTenants_deleteTenant",
+            "method": "DELETE",
+            "path": "/api/v1/admin/tenants/{id}",
+            "tag": "admin-tenants",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "AdminTenants_getTenant",
+            "method": "GET",
+            "path": "/api/v1/admin/tenants/{id}",
+            "tag": "admin-tenants",
+            "requestSchema": null,
+            "responseSchema": "Tenant",
+            "requiredFields": []
+        },
+        {
+            "operationId": "AdminTenants_listTenants",
+            "method": "GET",
+            "path": "/api/v1/admin/tenants",
+            "tag": "admin-tenants",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "AdminTenants_updateTenant",
+            "method": "PATCH",
+            "path": "/api/v1/admin/tenants/{id}",
+            "tag": "admin-tenants",
+            "requestSchema": "UpdateTenantRequest",
+            "responseSchema": "Tenant",
+            "requiredFields": []
+        },
+        {
+            "operationId": "Sessions_login",
+            "method": "POST",
+            "path": "/api/v1/auth/login",
+            "tag": "auth",
+            "requestSchema": "LoginRequest",
+            "responseSchema": "LoginResponse",
+            "requiredFields": [
+                "username",
+                "password",
+                "clientId"
+            ]
+        },
+        {
+            "operationId": "Sessions_logout",
+            "method": "POST",
+            "path": "/api/v1/auth/logout",
+            "tag": "auth",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "ClientMenus_createSysMenu",
+            "method": "POST",
+            "path": "/api/v1/clients/{clientId}/menus",
+            "tag": "client-menus",
+            "requestSchema": "CreateSysMenuRequest",
+            "responseSchema": "SysMenu",
+            "requiredFields": [
+                "title",
+                "type"
+            ]
+        },
+        {
+            "operationId": "ClientMenus_deleteSysMenu",
+            "method": "DELETE",
+            "path": "/api/v1/clients/{clientId}/menus/{menuId}",
+            "tag": "client-menus",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "ClientMenus_getSysMenu",
+            "method": "GET",
+            "path": "/api/v1/clients/{clientId}/menus/{menuId}",
+            "tag": "client-menus",
+            "requestSchema": null,
+            "responseSchema": "SysMenu",
+            "requiredFields": []
+        },
+        {
+            "operationId": "ClientMenus_listSysMenus",
+            "method": "GET",
+            "path": "/api/v1/clients/{clientId}/menus",
+            "tag": "client-menus",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "ClientMenus_moveSysMenu",
+            "method": "PATCH",
+            "path": "/api/v1/clients/{clientId}/menus/{menuId}/parent",
+            "tag": "client-menus",
+            "requestSchema": null,
+            "responseSchema": "SysMenu",
+            "requiredFields": []
+        },
+        {
+            "operationId": "ClientMenus_reorderSysMenus",
+            "method": "PUT",
+            "path": "/api/v1/clients/{clientId}/menus/{menuId}/reorder",
+            "tag": "client-menus",
+            "requestSchema": "ReorderSysMenuRequest",
+            "responseSchema": null,
+            "requiredFields": [
+                "orderedMenuIds"
+            ]
+        },
+        {
+            "operationId": "ClientMenus_updateSysMenu",
+            "method": "PATCH",
+            "path": "/api/v1/clients/{clientId}/menus/{menuId}",
+            "tag": "client-menus",
+            "requestSchema": "UpdateSysMenuRequest",
+            "responseSchema": "SysMenu",
+            "requiredFields": []
+        },
+        {
+            "operationId": "Clients_getClient",
+            "method": "GET",
+            "path": "/api/v1/clients/{clientId}",
+            "tag": "clients",
+            "requestSchema": null,
+            "responseSchema": "OAuthClientPublicInfo",
+            "requiredFields": []
+        },
+        {
+            "operationId": "Me_getMyMenus",
+            "method": "GET",
+            "path": "/api/v1/me/menus",
+            "tag": "me",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "Me_listMyTenants",
+            "method": "GET",
+            "path": "/api/v1/me/tenants",
+            "tag": "me",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "Me_switchTenant",
+            "method": "POST",
+            "path": "/api/v1/me/tenants/{tenantId}/switch",
+            "tag": "me",
+            "requestSchema": null,
+            "responseSchema": "SwitchTenantResponse",
+            "requiredFields": []
+        },
+        {
+            "operationId": "Me_whoami",
+            "method": "GET",
+            "path": "/api/v1/me",
+            "tag": "me",
+            "requestSchema": null,
+            "responseSchema": "CurrentUser",
+            "requiredFields": []
+        },
+        {
+            "operationId": "OAuth_authorize",
+            "method": "POST",
+            "path": "/api/v1/oauth/authorize",
+            "tag": "oauth",
+            "requestSchema": "AuthorizeCodeRequest",
+            "responseSchema": null,
+            "requiredFields": [
+                "clientId",
+                "redirectUri",
+                "responseType",
+                "state"
+            ]
+        },
+        {
+            "operationId": "OAuth_token",
+            "method": "POST",
+            "path": "/api/v1/oauth/token",
+            "tag": "oauth",
+            "requestSchema": "TokenRequest",
+            "responseSchema": "TokenResponse",
+            "requiredFields": [
+                "grantType",
+                "clientId"
+            ]
+        },
+        {
+            "operationId": "TenantApplications_listTenantApplications",
+            "method": "GET",
+            "path": "/api/v1/tenants/{tenantId}/applications",
+            "tag": "tenant-applications",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantApplications_removeTenantApplication",
+            "method": "DELETE",
+            "path": "/api/v1/tenants/{tenantId}/applications/{clientId}",
+            "tag": "tenant-applications",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantApplications_subscribeTenantApplication",
+            "method": "POST",
+            "path": "/api/v1/tenants/{tenantId}/applications",
+            "tag": "tenant-applications",
+            "requestSchema": "SubscribeTenantApplicationRequest",
+            "responseSchema": "TenantApplication",
+            "requiredFields": [
+                "clientId"
+            ]
+        },
+        {
+            "operationId": "TenantApplications_updateTenantApplication",
+            "method": "PATCH",
+            "path": "/api/v1/tenants/{tenantId}/applications/{clientId}",
+            "tag": "tenant-applications",
+            "requestSchema": "UpdateTenantApplicationRequest",
+            "responseSchema": "TenantApplication",
+            "requiredFields": [
+                "status"
+            ]
+        },
+        {
+            "operationId": "TenantMembers_assignTenantMemberRoles",
+            "method": "PUT",
+            "path": "/api/v1/tenants/{tenantId}/members/{userId}/roles",
+            "tag": "tenant-members",
+            "requestSchema": "SetTenantMemberRolesRequest",
+            "responseSchema": "TenantMemberUserView",
+            "requiredFields": [
+                "roleIds"
+            ]
+        },
+        {
+            "operationId": "TenantMembers_changeTenantUserStatus",
+            "method": "PATCH",
+            "path": "/api/v1/tenants/{tenantId}/members/{userId}/status",
+            "tag": "tenant-members",
+            "requestSchema": null,
+            "responseSchema": "TenantMemberUserView",
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantMembers_createTenantUser",
+            "method": "POST",
+            "path": "/api/v1/tenants/{tenantId}/members",
+            "tag": "tenant-members",
+            "requestSchema": "CreateSysUserRequest",
+            "responseSchema": "TenantMemberUserView",
+            "requiredFields": [
+                "username",
+                "password"
+            ]
+        },
+        {
+            "operationId": "TenantMembers_deleteTenantUser",
+            "method": "DELETE",
+            "path": "/api/v1/tenants/{tenantId}/members/{userId}",
+            "tag": "tenant-members",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantMembers_getTenantUser",
+            "method": "GET",
+            "path": "/api/v1/tenants/{tenantId}/members/{userId}",
+            "tag": "tenant-members",
+            "requestSchema": null,
+            "responseSchema": "TenantMemberUserView",
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantMembers_inviteTenantUser",
+            "method": "POST",
+            "path": "/api/v1/tenants/{tenantId}/members/invitations",
+            "tag": "tenant-members",
+            "requestSchema": null,
+            "responseSchema": "TenantMemberView",
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantMembers_listTenantUsers",
+            "method": "GET",
+            "path": "/api/v1/tenants/{tenantId}/members",
+            "tag": "tenant-members",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantMembers_updateTenantUser",
+            "method": "PATCH",
+            "path": "/api/v1/tenants/{tenantId}/members/{userId}",
+            "tag": "tenant-members",
+            "requestSchema": "UpdateSysUserRequest",
+            "responseSchema": "TenantMemberUserView",
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantRoleMenus_clearSysRoleMenus",
+            "method": "DELETE",
+            "path": "/api/v1/tenants/{tenantId}/roles/{roleId}/menus",
+            "tag": "tenant-role-menus",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantRoleMenus_listSysRoleMenus",
+            "method": "GET",
+            "path": "/api/v1/tenants/{tenantId}/roles/{roleId}/menus",
+            "tag": "tenant-role-menus",
+            "requestSchema": null,
+            "responseSchema": "RoleMenuGrant",
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantRoleMenus_setSysRoleMenus",
+            "method": "PUT",
+            "path": "/api/v1/tenants/{tenantId}/roles/{roleId}/menus",
+            "tag": "tenant-role-menus",
+            "requestSchema": "SetSysRoleMenusRequest",
+            "responseSchema": "RoleMenuGrant",
+            "requiredFields": [
+                "menuIds"
+            ]
+        },
+        {
+            "operationId": "TenantRoles_createSysRole",
+            "method": "POST",
+            "path": "/api/v1/tenants/{tenantId}/roles",
+            "tag": "tenant-roles",
+            "requestSchema": "CreateSysRoleRequest",
+            "responseSchema": "SysRole",
+            "requiredFields": [
+                "clientId",
+                "roleCode",
+                "roleName"
+            ]
+        },
+        {
+            "operationId": "TenantRoles_deleteSysRole",
+            "method": "DELETE",
+            "path": "/api/v1/tenants/{tenantId}/roles/{roleId}",
+            "tag": "tenant-roles",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantRoles_getSysRole",
+            "method": "GET",
+            "path": "/api/v1/tenants/{tenantId}/roles/{roleId}",
+            "tag": "tenant-roles",
+            "requestSchema": null,
+            "responseSchema": "SysRole",
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantRoles_listSysRoles",
+            "method": "GET",
+            "path": "/api/v1/tenants/{tenantId}/roles",
+            "tag": "tenant-roles",
+            "requestSchema": null,
+            "responseSchema": null,
+            "requiredFields": []
+        },
+        {
+            "operationId": "TenantRoles_updateSysRole",
+            "method": "PATCH",
+            "path": "/api/v1/tenants/{tenantId}/roles/{roleId}",
+            "tag": "tenant-roles",
+            "requestSchema": "UpdateSysRoleRequest",
+            "responseSchema": "SysRole",
+            "requiredFields": []
+        }
+    ]
+}

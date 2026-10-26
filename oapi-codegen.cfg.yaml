@@ -1,0 +1,14 @@
+# oapi-codegen.cfg.yaml — REQ-2026-003 生成区1 配置（人裁 2026-10-26，见 profiles/codegen.md go 行）
+#
+# std-http-server：生成 net/http ServerInterface + HandlerFromMux（Go 1.22+ ServeMux
+# 方法+通配路由），零路由框架依赖（仓 ethos=最少依赖，ktor delegate 先例同构）。
+# models：契约 DTO 直出——TypeSpec emit 即 camelCase JSON tag，线上形状无需二次变换。
+#
+# 生成物 internal/gen/api/gen_api.go 先删后写、禁手改；regen = bash scripts/gen-shared.sh，
+# L4.codegen.idempotent strict 复放字节比对会暴露手改。
+# 驱动：go.mod `tool` 指令钉 github.com/oapi-codegen/oapi-codegen/v2（版本见 version-lock.json）。
+package: genapi
+output: internal/gen/api/gen_api.go
+generate:
+  - models
+  - std-http-server
