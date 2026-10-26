@@ -1,6 +1,7 @@
 /bin/
 *.exe
 *.test
+!.env.test
 *.out
 coverage.*
 
