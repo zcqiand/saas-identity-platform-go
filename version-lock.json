@@ -1,6 +1,13 @@
 {
   "version_lock": {
     "go": "1.25（go.mod 指令版；本机工具链 1.27.3，scoop 装机，GOPROXY=goproxy.cn）",
-    "dependencies": "零三方依赖——禁引入 lock 外的库；四门（gofmt/vet/build/test）全走工具链自带命令"
+    "dependencies": "REQ-2026-003 起引入运行时依赖（API 面 codegen+DB+JWT 基础件），钉版如下；禁引入 lock 外的库",
+    "oapi-codegen": "v2.8.1（go.mod tool 指令钉版；std-http-server+models 生成，2026-10-27 REQ-2026-003）",
+    "gorm": "gorm.io/gorm v1.31.2 + gorm.io/driver/postgres v1.6.3（DB-First entity 生成桩配套运行时）",
+    "lib/pq": "github.com/lib/pq（仅 pq.StringArray 承 PG text[]/uuid[] 列，读路径专用）",
+    "oapi-codegen/runtime": "v1.8.0（std-http-server 生成物硬依赖）",
+    "golang.org/x/crypto": "bcrypt 密码兜底校验（plain: 直等为主）——随 auth 基础件任务引入 go.mod",
+    "gopkg.in/yaml.v3": "v3.0.1（scripts/genmanifest 读 openapi.yaml 专用，不进运行时）",
+    "stdlib-jwt": "JWT=手写 HS256（crypto/hmac+sha256+base64/json），禁 jwt 三方库（laravel 手写先例同构）"
   }
 }
