@@ -1,14 +1,17 @@
 {
   "schema": 1,
   "project": "saas-identity-platform-go",
-  "current_task": "REQ-2026-001 健康检查 + 端口装配最小切片已验收（2026-10-26）：red-first 实现，live 探针过，L0-L5 全绿，tag 已打",
+  "current_task": "REQ-2026-003 全量业务切片收官：47 op/11 tag 全交付 + CT live 2-way 201/201（v0.2.0-20261027）",
   "done": [
     "REQ-2026-001 立档（澄清表含「基础设施端点不挂 fn ID 不动树」——依 ktor REQ-2026-001/003 台账先例，人裁可否决）",
     "red-first：测试先行（config 4 例 + server 2 例），编译红证据后实现",
     "internal/config（SERVER_PORT fail-fast，禁兜底）+ internal/server（GET /health → {\"ok\":true,\"mode\":\"go\"}，405 守卫）+ cmd/server 组合根",
     "实机抓真 bug：server.New() 原未接 Addr，http.Server 零值落 :80 bind 拒；修为 New(addr)",
     "live 探针：GET 200 {\"mode\":\"go\",\"ok\":true} / POST 405 / 缺 SERVER_PORT exit 1",
-    "锚点包 internal/harness 删除（AC-5）；全门 L0-L5 绿（16 条目 0 软告警）"
+    "锚点包 internal/harness 删除（AC-5）；全门 L0-L5 绿（16 条目 0 软告警）",
+    "5.123 saas-go 全量切片 47 op 全 trace + gate 全绿",
+    "5.123 CT live 2-way 201/201（springboot oracle JsonNullable 修）",
+    "5.123 vue marker 刷 dcaf486 + CT 门 TRACE_MAP closure 指纹入账"
   ],
   "next": "等 lab-go 复刻收口后随下批需求；首个 API 需求时人裁 Go codegen 工具（profiles/codegen.md go 行）",
   "open_questions": [],
@@ -17,5 +20,7 @@
     "http.Server 零值 Addr 落 :80——装配必须显式传 addr（REQ-2026-001 T-2 实机指纹）",
     "不要给 skip 的测试挂功能 ID"
   ],
-  "last_gate_passed_at": "2026-10-26"
+  "last_gate_passed_at": "2026-10-26",
+  "last_session_at": "2026-10-27",
+  "last_session_summary": "Task 7-11 交付：tenant-members/roles/role-menus/client-menus/tenant-applications/admin-clients/admin-tenants/oauth 全实现；CT 2-way 四分叉收敛（I64 create 400 校验/I49+I76 status 无条件应用/I05 springboot JsonNullableModule oracle 修复）；CT 仓注册 go:5111"
 }
