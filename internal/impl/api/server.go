@@ -10,20 +10,22 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"gorm.io/gorm"
+
 	genapi "saas-identity-platform-go/internal/gen/api"
 )
 
-// Server 实现 genapi.ServerInterface。DB 为 nil 合法（路由壳不触库；
-// 各域实现接管后经 service 使用）。
+// Server 实现 genapi.ServerInterface。DB 为装配期注入的连接（*gorm.DB；
+// 各域实现接管后经 service 使用，路由壳阶段可为 nil 的域不触库）。
 type Server struct {
-	DB interface{}
+	DB *gorm.DB
 }
 
 // 编译期保证 Server 满足生成接口——签名漂移在 build 门即红。
 var _ genapi.ServerInterface = (*Server)(nil)
 
-// NewServer 构造路由壳。
-func NewServer() *Server { return &Server{} }
+// NewServer 构造路由壳（db 注入给已落地的域）。
+func NewServer(db *gorm.DB) *Server { return &Server{DB: db} }
 
 func notImplemented(w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "application/json")
@@ -64,12 +66,8 @@ func (s *Server) AdminTenantsGetTenant(w http.ResponseWriter, r *http.Request, i
 func (s *Server) AdminTenantsUpdateTenant(w http.ResponseWriter, r *http.Request, id string) {
 	notImplemented(w)
 }
-func (s *Server) SessionsLogin(w http.ResponseWriter, r *http.Request) {
-	notImplemented(w)
-}
-func (s *Server) SessionsLogout(w http.ResponseWriter, r *http.Request) {
-	notImplemented(w)
-}
+
+// SessionsLogin / SessionsLogout 落地见 auth_impl.go（tag: auth 已接管）。
 func (s *Server) ClientsGetClient(w http.ResponseWriter, r *http.Request, clientId string) {
 	notImplemented(w)
 }

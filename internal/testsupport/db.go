@@ -4,6 +4,8 @@
 package testsupport
 
 import (
+	crand "crypto/rand"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -33,16 +35,37 @@ func DB(t *testing.T) *gorm.DB {
 	return db
 }
 
-// WithTx 开真事务执行 fn，t.Cleanup 强制 Rollback（fn 正常返回也不提交）。
-func WithTx(t *testing.T, fn func(tx *gorm.DB)) {
+// Tx 开真事务并登记 Cleanup 强制 Rollback，返回 tx 供测试直接用
+// （Feature 测试把它作为 Server 的 DB 注入，被测面所有写入随之整体回滚）。
+func Tx(t *testing.T) *gorm.DB {
 	t.Helper()
 	tx := DB(t).Begin()
 	if tx.Error != nil {
 		t.Fatalf("开启事务失败: %v", tx.Error)
 	}
 	t.Cleanup(func() { _ = tx.Rollback() })
-	fn(tx)
+	return tx
 }
+
+// WithTx 开真事务执行 fn，t.Cleanup 强制 Rollback（fn 正常返回也不提交）。
+func WithTx(t *testing.T, fn func(tx *gorm.DB)) {
+	t.Helper()
+	fn(Tx(t))
+}
+
+// NewUUID 手拼 RFC 4122 v4（零三方依赖，version-lock 不收 uuid 库）。
+func NewUUID() string {
+	var b [16]byte
+	if _, err := crand.Read(b[:]); err != nil {
+		panic(err) // 测试基础设施：系统熵源不可用即崩
+	}
+	b[6] = (b[6] & 0x0f) | 0x40
+	b[8] = (b[8] & 0x3f) | 0x80
+	return fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+}
+
+// Ptr 薄包装：字面量取指针（实体可空列构造用）。
+func Ptr[T any](v T) *T { return &v }
 
 // loadEnvTest 从 cwd 逐级上溯找 go.mod 定位仓根，把 .env.test 中尚未设置的
 // 键补进进程 env（已显式设置的优先，不覆盖）。

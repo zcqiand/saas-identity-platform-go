@@ -24,11 +24,13 @@ func TestCamelizeNestedAndSlice(t *testing.T) {
 		"available_tenants": []any{
 			map[string]any{"tenant_id": "t1", "role_name": nil},
 		},
-		"page_meta": map[string]any{"page_size": 20},
+		"memberships": []map[string]any{{"tenant_key": "k1"}, {"role_ids": []string{}}},
+		"page_meta":   map[string]any{"page_size": 20},
 	}
 	got := Camelize(in)
 	want := map[string]any{
 		"availableTenants": []any{map[string]any{"tenantId": "t1"}},
+		"memberships":      []map[string]any{{"tenantKey": "k1"}, {"roleIds": []string{}}},
 		"pageMeta":         map[string]any{"pageSize": 20},
 	}
 	if !reflect.DeepEqual(got, want) {

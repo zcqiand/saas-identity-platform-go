@@ -118,11 +118,6 @@ def main() -> int:
         top = name.split("/")[0]  # 子测试 TestX/sub 沿用父测试的挂 ID
         ids = sorted(fn_map.get(name) or fn_map.get(top) or set())
         entries.append({"test": name, "fns": [] if inert else ids, "inert": inert})
-        for name in sorted(final):
-            inert = final[name] == "skip"
-            top = name.split("/")[0]  # 子测试 TestX/sub 沿用父测试的挂 ID
-            ids = sorted(fn_map.get(name) or fn_map.get(top) or set())
-            entries.append({"test": name, "fns": [] if inert else ids, "inert": inert})
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(

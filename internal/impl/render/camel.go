@@ -30,6 +30,12 @@ func Camelize(v any) any {
 			out[i] = Camelize(val)
 		}
 		return out
+	case []map[string]any:
+		out := make([]map[string]any, len(typed))
+		for i, val := range typed {
+			out[i] = Camelize(val).(map[string]any)
+		}
+		return out
 	default:
 		return v
 	}

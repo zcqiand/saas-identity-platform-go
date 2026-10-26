@@ -19,7 +19,7 @@ import (
 func Assemble(db *gorm.DB) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handleHealth)
-	_ = genapi.HandlerFromMux(apiserver.NewServer(), mux)
+	_ = genapi.HandlerFromMux(apiserver.NewServer(db), mux)
 	return mux
 }
 

@@ -38,6 +38,12 @@ func jwtEnv() (key, issuer, audience string, ttl int, err error) {
 
 func b64(b []byte) string { return base64.RawURLEncoding.EncodeToString(b) }
 
+// TTLSeconds 取 JWT_TTL_SECONDS（login payload expires_in 用；fail-fast 同 encode）。
+func TTLSeconds() (int, error) {
+	_, _, _, ttl, err := jwtEnv()
+	return ttl, err
+}
+
 func hs256(key string, signingInput string) string {
 	mac := hmac.New(sha256.New, []byte(key))
 	mac.Write([]byte(signingInput))
