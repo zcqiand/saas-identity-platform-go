@@ -6,46 +6,13 @@ package api_test
 // 无 active membership → 403（禁 200+null tenant 兜底）；logout 恒 204。
 
 import (
-	"bytes"
-	"encoding/json"
-	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
 
-	"gorm.io/gorm"
-
 	"saas-identity-platform-go/internal/gen/entity"
-	"saas-identity-platform-go/internal/impl/harness"
 	"saas-identity-platform-go/internal/testsupport"
 )
-
-func postJSON(mux http.Handler, path string, body any) *httptest.ResponseRecorder {
-	raw, _ := json.Marshal(body)
-	rec := httptest.NewRecorder()
-	req := httptest.NewRequest(http.MethodPost, path, bytes.NewReader(raw))
-	req.Header.Set("Content-Type", "application/json")
-	mux.ServeHTTP(rec, req)
-	return rec
-}
-
-func decodeBody(rec *httptest.ResponseRecorder) map[string]any {
-	out := map[string]any{}
-	if rec.Body.Len() > 0 {
-		_ = json.Unmarshal(rec.Body.Bytes(), &out)
-	}
-	return out
-}
-
-// featureMux 一条事务贯穿整个用例：server 的 DB 与断言查询共用同一连接
-// （未提交写入只在本连接可见；Cleanup 统一回滚）。
-func featureMux(t *testing.T) (http.Handler, testsupport.AuthFixtures, *gorm.DB) {
-	t.Helper()
-	tx := testsupport.Tx(t)
-	fx := testsupport.SeedAuth(t, tx)
-	return harness.Assemble(tx), fx, tx
-}
 
 // fn: M01.F04.I01
 func TestLoginSuccess200FullShape(t *testing.T) {

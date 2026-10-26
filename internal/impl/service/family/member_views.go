@@ -58,3 +58,60 @@ func MembershipsFor(db *gorm.DB, userID string) ([]map[string]any, error) {
 	}
 	return out, nil
 }
+
+// FlatUserView 扁平成员视图（TenantMemberUserView）：path {userId} = sys_user.id，
+// 视图 status 读 member 行（rails Family::MemberViews.flat_user_view 镜像）。
+func FlatUserView(db *gorm.DB, member *entity.TenantMember, user *entity.SysUser) (map[string]any, error) {
+	roleIds, err := RoleIds(db, member.Id)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]any{
+		"id":         user.Id,
+		"tenant_id":  member.TenantId,
+		"username":   user.Username,
+		"email":      user.Email,
+		"status":     MemberStatus(member.Status),
+		"role_ids":   roleIds,
+		"created_at": member.CreatedAt,
+		"updated_at": member.UpdatedAt,
+	}, nil
+}
+
+// MemberPart 嵌套视图的 member 半边。
+func MemberPart(member *entity.TenantMember) map[string]any {
+	return map[string]any{
+		"id":          member.Id,
+		"tenant_id":   member.TenantId,
+		"user_id":     member.UserId,
+		"member_name": member.MemberName,
+		"is_owner":    member.IsOwner,
+		"status":      MemberStatus(member.Status),
+		"created_at":  member.CreatedAt,
+		"updated_at":  member.UpdatedAt,
+	}
+}
+
+// UserPart 嵌套视图的 user 半边。
+func UserPart(user *entity.SysUser) map[string]any {
+	return map[string]any{
+		"id":              user.Id,
+		"username":        user.Username,
+		"email":           user.Email,
+		"mobile":          user.Mobile,
+		"status":          UserStatus(user.Status),
+		"failed_attempts": user.FailedAttempts,
+		"locked_until":    user.LockedUntil,
+		"created_at":      user.CreatedAt,
+		"updated_at":      user.UpdatedAt,
+	}
+}
+
+// NestedView 嵌套视图（invitations 用）：{ member, user, roles }。
+func NestedView(member *entity.TenantMember, user *entity.SysUser) map[string]any {
+	return map[string]any{
+		"member": MemberPart(member),
+		"user":   UserPart(user),
+		"roles":  []any{},
+	}
+}
