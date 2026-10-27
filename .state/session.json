@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "project": "saas-identity-platform-go",
-  "current_task": "v0.2.1-20261027 CORS 白名单中间件补交付收工（lab-go final review 对称面）；1485f05 已推",
+  "current_task": "REQ-2026-003 全闭环：v0.2.1-20261027 已上线（CORS 批+deploy 脚本顺序修复，tag deploy 全绿）；secrets 三键已配",
   "done": [
     "REQ-2026-001 立档（澄清表含「基础设施端点不挂 fn ID 不动树」——依 ktor REQ-2026-001/003 台账先例，人裁可否决）",
     "red-first：测试先行（config 4 例 + server 2 例），编译红证据后实现",
@@ -14,7 +14,7 @@
     "5.123 vue marker 刷 dcaf486 + CT 门 TRACE_MAP closure 指纹入账",
     "CORS 补交付：cors.go + env 7 key + deploy 自举/append + family-env scope 纳 go；4 测试 RED→GREEN，suite 8/8，gate exit 0"
   ],
-  "next": "等 lab-go 复刻收口后随下批需求；首个 API 需求时人裁 Go codegen 工具（profiles/codegen.md go 行）",
+  "next": "go 双仓主线全闭环。可选后续：家族 mirror 漂移 sync 批 / PKCE 家族裁定；无阻塞项",
   "open_questions": [],
   "dont": [
     "不要改 .harness/stack.json 让门变松",
