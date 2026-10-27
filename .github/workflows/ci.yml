@@ -2,7 +2,8 @@ name: ci
 
 # saas-identity-platform-go (Go 1.27, net/http 标准库, 零三方依赖)
 # 家族原则（镜像 kotlin/laravel ci.yml 注释）：CI=门内静态+test + 镜像装配冒烟；
-# suite gate=全量（L0.5 deploy parity 在本地跑）。四门全工具链自带，无 wrapper 无 service。
+# suite gate=全量（L0.5 deploy parity 在本地跑）。四门全工具链自带；L4 真库测试
+# 由 postgres service 容器供给（kotlin ci 同形，REQ-2026-003 起测试依赖家族 PG）。
 on:
   push:
     branches: [master]
@@ -13,6 +14,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        # 本地 gate L4 同形：saas_test @ 127.0.0.1:54321，凭据 postgres/postgres（kotlin ci 镜像）
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: saas_test
+        ports:
+          - 54321:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -20,11 +36,22 @@ jobs:
           go-version: "1.27"
           cache: true
 
+      - name: Schema bootstrap — shared 仓 DDL（DB-First：schema 只认 shared 生成物）
+        # 0000=全量目标 DDL（幂等 IF NOT EXISTS）+ 0002 增量（sys_user 锁定列）；
+        # uuid_generate_v4 依赖 uuid-ossp 扩展（本地 pgdata 已带、runner 全新库须显式建）。
+        # 本地空库复演过（12 表 + go test ./... 全绿）。
+        run: |
+          base="https://raw.githubusercontent.com/zcqiand/saas-identity-platform-shared/refs/heads/master/drizzle"
+          { echo 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+            curl -fsSL "$base/0000_target_ddl.sql"
+            curl -fsSL "$base/0002_typical_reaper.sql"
+          } | psql -v ON_ERROR_STOP=1 postgresql://postgres:postgres@127.0.0.1:54321/saas_test
+
       - name: L1/L2/L4 — gofmt + vet + build + test
         env:
-          # go test 无 env 消费（config 包只在显式调用时读 SERVER_PORT）；
-          # 与 .env.test 严格同值，防未来测试吃环境漂移
+          # testsupport 优先吃进程 env；与 .env.test 严格同值，防测试吃环境漂移
           SERVER_PORT: "5111"
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54321/saas_test
         run: |
           gofmt -l cmd internal | tee /tmp/fmt.out
           [ ! -s /tmp/fmt.out ] || { echo "ERROR: gofmt 未格式化文件:" >&2; exit 1; }
@@ -33,13 +60,17 @@ jobs:
           go test ./...
 
       - name: 镜像装配冒烟 — build + run + /health 200
-        # prod 同款镜像直接拉起（连 Dockerfile 一起验）；/health 不消费 DB，
-        # 无 env 依赖除 SERVER_PORT（显式提供，suite 硬规则 §1）。
+        # prod 同款镜像直接拉起（连 Dockerfile 一起验）。REQ-2026-003 起装配期
+        # fail-fast 全键（SERVER_PORT/DATABASE_URL）且 gorm.Open 急连 DB——
+        # --network host 让容器 127.0.0.1:54321 打进 service PG（显式提供，
+        # suite 硬规则 §1 禁缺键）。
         run: |
           docker build -t go-smoke .
           docker rm -f go-smoke >/dev/null 2>&1 || true
-          docker run -d --name go-smoke -p 127.0.0.1:5111:5111 \
-            --env SERVER_PORT=5111 go-smoke
+          docker run -d --name go-smoke --network host \
+            --env SERVER_PORT=5111 \
+            --env DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54321/saas_test \
+            go-smoke
           ok=""
           for i in $(seq 1 60); do
             body="$(curl -fsS --max-time 3 http://127.0.0.1:5111/health 2>/dev/null || true)"
