@@ -1,13 +1,14 @@
 # =============================================================================
 # saas-identity-platform-go — 生产镜像
 #
-#   builder  → golang:1.27-alpine + CGO_ENABLED=0 静态编译（零三方依赖，
-#              go.mod 无 require——go mod download 空转也保持缓存友好分层）
+#   builder  → golang:1.27-alpine + CGO_ENABLED=0 静态编译（REQ-2026-003 起
+#              gorm/oapi-codegen runtime 等依赖，go.sum 随层拷入）
 #   runtime  → alpine:3（静态二进制无 libc 依赖，musl 无碍——CGO 已关；
 #              家族 jammy 姿态是给 JVM/native deps 的，go 静态二进制不需要）
 #
-# 数据库：本仓尚无 PG 接线（REQ-2026-001 健康切片形态）——env 契约只有
-#         SERVER_PORT；PG/JWT 需求进来时同 commit 扩 env 契约 + deploy 脚本。
+# 数据库：REQ-2026-003 起连家族 PG（DATABASE_URL，装配期 gorm.Open 急连）；
+#         env 契约全集见 .env.example——fail-fast 键由 env-file 保证（suite
+#         硬规则 §1：禁 env 默认值兜底）。
 #
 # 端口：容器内监听 SERVER_PORT=5111（host=container 单层映射，ADR-0018；
 #       X13 槽）。SERVER_PORT 不在镜像内 ENV 兜底——fail-fast 键由 env-file
@@ -23,8 +24,8 @@
 FROM golang:1.27-alpine AS builder
 WORKDIR /app
 
-# 缓存友好分层：先拷 go.mod（零依赖，仍走标准姿势），再拷源码
-COPY go.mod ./
+# 缓存友好分层：先拷 go.mod + go.sum（依赖下载层），再拷源码
+COPY go.mod go.sum ./
 RUN go mod download
 
 COPY cmd ./cmd
