@@ -1,5 +1,14 @@
 # 更新日志
 
+## v0.2.1-20261027 (2026-10-27)
+
+CORS 白名单中间件补交付（lab-go final review Critical#1 对称面；rails cors.rb 镜像）：
+
+- `internal/impl/harness/cors.go`：SAAS_CORS_ALLOWED_ORIGINS 白名单 fail-fast、预检 204、ACAO 回显 + expose Authorization、非白名单不出 CORS 头
+- env 契约 7 key（+.env.test 同键）；deploy go.env 自举 + append_if_missing 补 prod origin；family-env SAAS_CORS scope 纳 go
+- 全 suite 8/8 ok，gate exit 0（L0.5 deploy parity 含新键）
+
+
 格式照 `v<MAJOR>.<MINOR>.<PATCH>-<YYYYMMDD>`（tag 即放行：全量回归绿后打 tag）。
 
 ## v0.2.0-20261027 (2026-10-27)

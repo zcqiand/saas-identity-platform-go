@@ -13,6 +13,7 @@ import (
 // trace fns 留空）。
 func TestHealthShape(t *testing.T) {
 	rec := httptest.NewRecorder()
+	t.Setenv("SAAS_CORS_ALLOWED_ORIGINS", "http://localhost:5101")
 	New("127.0.0.1:0", harness.Assemble(nil)).Handler.ServeHTTP(rec, httptest.NewRequest("GET", "/health", nil))
 	if rec.Code != 200 {
 		t.Fatalf("期望 200，得到 %d", rec.Code)

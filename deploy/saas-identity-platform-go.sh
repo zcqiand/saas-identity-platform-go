@@ -166,3 +166,14 @@ if [ $i -ge 120 ]; then
 fi
 
 echo "→ deploy done at $(date -u)"
+# 存量 go.env 补键/占位值 reconcile（rails 同款：bootstrap 残留占位会让容器起来即坏）
+append_if_missing() {
+  key="$1"; val="$2"
+  if ! grep -q "^${key}=" "$BASE/go.env"; then
+    echo "→ append ${key} to existing $BASE/go.env"
+    umask 077
+    printf '%s=%s
+' "$key" "$val" >> "$BASE/go.env"
+  fi
+}
+append_if_missing SAAS_CORS_ALLOWED_ORIGINS 'https://saas-nextjs.xiangru.uk,https://saas-react.xiangru.uk,https://saas-vue.xiangru.uk,https://saas-flutter.xiangru.uk'

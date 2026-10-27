@@ -55,5 +55,6 @@ func featureMux(t *testing.T) (http.Handler, testsupport.AuthFixtures, *gorm.DB)
 	t.Helper()
 	tx := testsupport.Tx(t)
 	fx := testsupport.SeedAuth(t, tx)
+	t.Setenv("SAAS_CORS_ALLOWED_ORIGINS", "http://localhost:5101,http://localhost:5102,http://localhost:5103,http://localhost:5108")
 	return harness.Assemble(tx), fx, tx
 }

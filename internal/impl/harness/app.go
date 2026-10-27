@@ -16,7 +16,13 @@ import (
 )
 
 // Assemble 返回装配好的根 ServeMux。db 仅透传给 api Server（壳阶段可为 nil）。
-func Assemble(db *gorm.DB) *http.ServeMux {
+func Assemble(db *gorm.DB) http.Handler {
+	// CORS 白名单中间件（rails rack-cors 镜像；SAAS_CORS_ALLOWED_ORIGINS fail-fast）
+	return withCORS(corsAllowedOrigins(), assembleMux(db))
+}
+
+// assembleMux 裸 mux 装配（无 CORS 壳；route-parity 测试用 .Handler(pattern) 查表）。
+func assembleMux(db *gorm.DB) *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", handleHealth)
 	_ = genapi.HandlerFromMux(apiserver.NewServer(db), mux)

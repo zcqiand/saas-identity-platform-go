@@ -68,7 +68,7 @@ func expectedPattern(op manifestOp) string {
 
 func TestManifestOperationsHaveExactRoutes(t *testing.T) {
 	m := loadManifest(t)
-	mux := Assemble(nil)
+	mux := assembleMux(nil)
 
 	for _, op := range m.Operations {
 		req := httptest.NewRequest(op.Method, probePath(op.Path), nil)
@@ -88,7 +88,7 @@ func TestManifestOperationsHaveExactRoutes(t *testing.T) {
 
 func TestWrongMethodYields405(t *testing.T) {
 	m := loadManifest(t)
-	mux := Assemble(nil)
+	mux := assembleMux(nil)
 
 	// 方法错 → ServeMux 写 405；若路由被注册成方法无关 catch-all，这里会拿到
 	// 2xx/5xx——红。两个合法例外，均须放行：
@@ -143,7 +143,7 @@ func pathShapeMatches(opPath, actual string) bool {
 }
 
 func TestOutsideContractIs404(t *testing.T) {
-	mux := Assemble(nil)
+	mux := assembleMux(nil)
 	// 契约外根路径必须 404——API 面只认生成物（硬规则 §4），除 /health 外无私有路由
 	for _, p := range []string{"/", "/api", "/api/v1", "/internal/secret"} {
 		req := httptest.NewRequest(http.MethodGet, p, nil)
