@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>API 文档 — saas-identity-platform (go)</title>
+  <link rel="stylesheet" href="swagger-ui.css">
+  <link rel="icon" type="image/png" href="favicon-32x32.png">
+  <!--
+    vendor 的 swagger-ui-dist 入口页（版本 5.33.1，见 swagger-ui-bundle.js.LICENSE.txt；
+    静态件与 rails 同源拷贝）。本页展示的 openapi.json 是 shared 契约的生成副本：
+    SSOT = ../saas-identity-platform-shared/generated/openapi/openapi.yaml，勿手改本目录 openapi.json，
+    契约变更后跑 scripts/gen-shared.sh 再生成。
+  -->
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="swagger-ui-bundle.js" defer></script>
+  <script src="swagger-ui-standalone-preset.js" defer></script>
+  <script defer>
+    window.addEventListener('DOMContentLoaded', function () {
+      window.ui = SwaggerUIBundle({
+        url: 'openapi.json',
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        docExpansion: 'none',
+        persistAuthorization: true,
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+        layout: 'StandaloneLayout'
+      });
+    });
+  </script>
+</body>
+</html>

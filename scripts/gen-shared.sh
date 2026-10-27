@@ -27,12 +27,19 @@ echo "[gen-shared] step 3/4 — genmanifest（路由面 manifest）"
 rm -f generated/api_manifest.json
 go run ./scripts/genmanifest "$SHARED_DIR/generated/openapi/openapi.yaml"
 
+# REQ-2026-003 Swagger 文档面（rails scripts/gen-shared.sh step 3 同款）：
+# shared openapi.yaml -> harness docs/api-docs/openapi.json，servers 清空让
+# swagger try-it-out 同源打本域。勿手改 openapi.json，改契约后重跑本脚本。
+echo "[gen-shared] step 3.5/4 — openapi.yaml -> docs/api-docs/openapi.json (servers -> same-origin)"
+go run ./scripts/genopenapi "$SHARED_DIR/generated/openapi/openapi.yaml" internal/impl/harness/docs/api-docs/openapi.json
+echo "[gen-shared]    wrote internal/impl/harness/docs/api-docs/openapi.json"
+
 echo "[gen-shared] step 4/4 — 漂移护栏（tracked diff ∪ untracked）"
-if ! git diff --exit-code --quiet -- internal/gen/api generated 2>/dev/null \
-  || [ -n "$(git ls-files --others --exclude-standard -- internal/gen/api generated)" ]; then
+if ! git diff --exit-code --quiet -- internal/gen/api generated internal/impl/harness/docs/api-docs 2>/dev/null \
+  || [ -n "$(git ls-files --others --exclude-standard -- internal/gen/api generated internal/impl/harness/docs/api-docs)" ]; then
   echo "[gen-shared] FATAL: 生成区与 git HEAD 不一致（含 untracked 新文件）" >&2
   echo "[gen-shared]        处理：确认契约变更合法（shared emit 已收口）后" >&2
-  echo "[gen-shared]        git add internal/gen/api generated && git commit，再重跑本脚本核绿" >&2
+  echo "[gen-shared]        git add internal/gen/api generated internal/impl/harness/docs/api-docs && git commit，再重跑本脚本核绿" >&2
   exit 1
 fi
 echo "[gen-shared] OK — 生成区与 HEAD 一致"

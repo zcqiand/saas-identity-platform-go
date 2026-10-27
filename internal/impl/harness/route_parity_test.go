@@ -144,7 +144,7 @@ func pathShapeMatches(opPath, actual string) bool {
 
 func TestOutsideContractIs404(t *testing.T) {
 	mux := assembleMux(nil)
-	// 契约外根路径必须 404——API 面只认生成物（硬规则 §4），除 /health 外无私有路由
+	// 契约外根路径必须 404——API 面只认生成物（硬规则 §4）；infra 面=/health + /api-docs（都不进 manifest）
 	for _, p := range []string{"/", "/api", "/api/v1", "/internal/secret"} {
 		req := httptest.NewRequest(http.MethodGet, p, nil)
 		rec := httptest.NewRecorder()
