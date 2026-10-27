@@ -70,6 +70,7 @@ jobs:
           docker run -d --name go-smoke --network host \
             --env SERVER_PORT=5111 \
             --env DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54321/saas_test \
+            --env SAAS_CORS_ALLOWED_ORIGINS=http://localhost:5101 \
             go-smoke
           ok=""
           for i in $(seq 1 60); do
