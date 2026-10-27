@@ -52,6 +52,7 @@ func mountDocsFace(mux *http.ServeMux) {
 	redirect := func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/api-docs/index.html", http.StatusFound)
 	}
+	mux.HandleFunc("GET /{$}", redirect) // rails `root to: redirect(...)` 镜像
 	mux.HandleFunc("GET /api-docs", redirect)
 	mux.HandleFunc("GET /api-docs/{$}", redirect)
 	// FileServer/ServeFileFS 都会把 /index.html 301 规范化成 ./——rails 静态中间件

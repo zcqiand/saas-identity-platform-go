@@ -144,18 +144,27 @@ func pathShapeMatches(opPath, actual string) bool {
 
 func TestOutsideContractIs404(t *testing.T) {
 	mux := assembleMux(nil)
-	// 契约外根路径必须 404——API 面只认生成物（硬规则 §4）；infra 面=/health + /api-docs（都不进 manifest）
-	for _, p := range []string{"/", "/api", "/api/v1", "/internal/secret"} {
-		req := httptest.NewRequest(http.MethodGet, p, nil)
-		rec := httptest.NewRecorder()
+	// 契约外根路径必须 404——API 面只认生成物（硬规则 §4）；infra 面=/health + /api-docs + 根跳转（都不进 manifest）
+	var req *http.Request
+	var rec *httptest.ResponseRecorder
+	for _, p := range []string{"/api", "/api/v1", "/internal/secret"} {
+		req = httptest.NewRequest(http.MethodGet, p, nil)
+		rec = httptest.NewRecorder()
 		mux.ServeHTTP(rec, req)
 		if rec.Code != http.StatusNotFound {
 			t.Errorf("契约外路径 %s 应 404，得 %d", p, rec.Code)
 		}
 	}
+	// 根路径：rails `root to: redirect(...)` 镜像，302 跳 /api-docs/index.html（302 而非 404）
+	req = httptest.NewRequest(http.MethodGet, "/", nil)
+	rec = httptest.NewRecorder()
+	mux.ServeHTTP(rec, req)
+	if rec.Code != http.StatusFound {
+		t.Errorf("GET / 应 302 跳 Swagger UI（rails root redirect 镜像），得 %d", rec.Code)
+	}
 	// infra：GET /health 在（家族探活契约，不进 manifest）
-	req := httptest.NewRequest(http.MethodGet, "/health", nil)
-	rec := httptest.NewRecorder()
+	req = httptest.NewRequest(http.MethodGet, "/health", nil)
+	rec = httptest.NewRecorder()
 	mux.ServeHTTP(rec, req)
 	if rec.Code != http.StatusOK {
 		t.Errorf("GET /health 应 200，得 %d", rec.Code)

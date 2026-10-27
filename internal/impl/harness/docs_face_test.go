@@ -15,14 +15,18 @@ import (
 func TestDocsFaceRedirectsToIndex(t *testing.T) {
 	t.Setenv("SAAS_CORS_ALLOWED_ORIGINS", "http://localhost:5101")
 	h := Assemble(nil)
-	req := httptest.NewRequest("GET", "/api-docs", nil)
-	rec := httptest.NewRecorder()
-	h.ServeHTTP(rec, req)
-	if rec.Code != 302 {
-		t.Fatalf("GET /api-docs 期望 302，得到 %d", rec.Code)
-	}
-	if loc := rec.Header().Get("Location"); loc != "/api-docs/index.html" {
-		t.Fatalf("Location 期望 /api-docs/index.html，得到 %q", loc)
+	// rails config/routes.rb `root to: redirect('/api-docs/index.html')` 镜像：
+	// 根路径与 /api-docs 都 302 跳 Swagger UI（prod 实证 rails / → 302）
+	for _, path := range []string{"/", "/api-docs"} {
+		req := httptest.NewRequest("GET", path, nil)
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, req)
+		if rec.Code != 302 {
+			t.Fatalf("GET %s 期望 302，得到 %d", path, rec.Code)
+		}
+		if loc := rec.Header().Get("Location"); loc != "/api-docs/index.html" {
+			t.Fatalf("GET %s Location 期望 /api-docs/index.html，得到 %q", path, loc)
+		}
 	}
 }
 

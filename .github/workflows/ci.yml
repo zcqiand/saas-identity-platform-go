@@ -96,13 +96,16 @@ jobs:
             exit 1
           fi
           # Swagger 文档面（rails routes.rb /api-docs 同款基础设施；ktor CI 冒烟同款）
-          docs="$(curl -fsS -o /dev/null -w '%{http_code}' --max-time 3 http://127.0.0.1:5111/api-docs 2>/dev/null || true)"
-          echo "→ GET /api-docs: $docs"
-          if [ "$docs" != "302" ]; then
-            echo "ERROR: GET /api-docs 非 302" >&2
-            docker rm -f go-smoke >/dev/null 2>&1 || true
-            exit 1
-          fi
+          # 根路径同跳（rails `root to: redirect(...)` 镜像，prod 实证 rails / → 302）
+          for p in / /api-docs; do
+            docs="$(curl -s -o /dev/null -w '%{http_code}' --max-time 3 "http://127.0.0.1:5111$p" 2>/dev/null || true)"
+            echo "→ GET $p: $docs"
+            if [ "$docs" != "302" ]; then
+              echo "ERROR: GET $p 非 302" >&2
+              docker rm -f go-smoke >/dev/null 2>&1 || true
+              exit 1
+            fi
+          done
           docker rm -f go-smoke >/dev/null 2>&1 || true
 
   # 部署链（saas X13=5111；镜像 kotlin deploy job，tag push 触发）:
