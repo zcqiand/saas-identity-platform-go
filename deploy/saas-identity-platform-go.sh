@@ -66,6 +66,19 @@ if ! grep -q '^DATABASE_URL=..*' "$BASE/go.env"; then
   exit 1
 fi
 
+# 存量 go.env 补键/占位值 reconcile（rails 同款：bootstrap 残留占位会让容器起来即坏）。
+# 必须在容器启动前——v0.2.1 首航曾错排在 deploy done 之后：探测在先、补键在后，
+# 容器缺 SAAS_CORS_ALLOWED_ORIGINS 装配 panic → 探测失败 exit → 补键永不执行。
+append_if_missing() {
+  key="$1"; val="$2"
+  if ! grep -q "^${key}=" "$BASE/go.env"; then
+    echo "→ append ${key} to existing $BASE/go.env"
+    umask 077
+    printf '%s=%s\n' "$key" "$val" >> "$BASE/go.env"
+  fi
+}
+append_if_missing SAAS_CORS_ALLOWED_ORIGINS 'https://saas-nextjs.xiangru.uk,https://saas-react.xiangru.uk,https://saas-vue.xiangru.uk,https://saas-flutter.xiangru.uk'
+
 # nginx vhost 重渲染(每次 deploy 都跑,ADR-0018:容器端口变了 vhost 必须跟)。
 # 模板每次都从 master 拉最新 —— VPS 本地老模板会渲染出老端口全家族 502(2026-09-03 事故)。
 # ?v=$(date +%s) cache-buster：CDN/raw 缓存防在案（flutter 先例）。
@@ -166,14 +179,3 @@ if [ $i -ge 120 ]; then
 fi
 
 echo "→ deploy done at $(date -u)"
-# 存量 go.env 补键/占位值 reconcile（rails 同款：bootstrap 残留占位会让容器起来即坏）
-append_if_missing() {
-  key="$1"; val="$2"
-  if ! grep -q "^${key}=" "$BASE/go.env"; then
-    echo "→ append ${key} to existing $BASE/go.env"
-    umask 077
-    printf '%s=%s
-' "$key" "$val" >> "$BASE/go.env"
-  fi
-}
-append_if_missing SAAS_CORS_ALLOWED_ORIGINS 'https://saas-nextjs.xiangru.uk,https://saas-react.xiangru.uk,https://saas-vue.xiangru.uk,https://saas-flutter.xiangru.uk'
