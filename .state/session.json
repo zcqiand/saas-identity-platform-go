@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "project": "saas-identity-platform-go",
-  "current_task": "REQ-2026-003 全量业务切片收官：47 op/11 tag 全交付 + CT live 2-way 201/201（v0.2.0-20261027）",
+  "current_task": "v0.2.1-20261027 CORS 白名单中间件补交付收工（lab-go final review 对称面）；1485f05 已推",
   "done": [
     "REQ-2026-001 立档（澄清表含「基础设施端点不挂 fn ID 不动树」——依 ktor REQ-2026-001/003 台账先例，人裁可否决）",
     "red-first：测试先行（config 4 例 + server 2 例），编译红证据后实现",
@@ -11,14 +11,16 @@
     "锚点包 internal/harness 删除（AC-5）；全门 L0-L5 绿（16 条目 0 软告警）",
     "5.123 saas-go 全量切片 47 op 全 trace + gate 全绿",
     "5.123 CT live 2-way 201/201（springboot oracle JsonNullable 修）",
-    "5.123 vue marker 刷 dcaf486 + CT 门 TRACE_MAP closure 指纹入账"
+    "5.123 vue marker 刷 dcaf486 + CT 门 TRACE_MAP closure 指纹入账",
+    "CORS 补交付：cors.go + env 7 key + deploy 自举/append + family-env scope 纳 go；4 测试 RED→GREEN，suite 8/8，gate exit 0"
   ],
   "next": "等 lab-go 复刻收口后随下批需求；首个 API 需求时人裁 Go codegen 工具（profiles/codegen.md go 行）",
   "open_questions": [],
   "dont": [
     "不要改 .harness/stack.json 让门变松",
     "http.Server 零值 Addr 落 :80——装配必须显式传 addr（REQ-2026-001 T-2 实机指纹）",
-    "不要给 skip 的测试挂功能 ID"
+    "不要给 skip 的测试挂功能 ID",
+    "saas 家族 token 无 typ（rails 同形）——lab-go 的 typ 修复不适用本仓，别照搬"
   ],
   "last_gate_passed_at": "2026-10-26",
   "last_session_at": "2026-10-27",
