@@ -1186,10 +1186,10 @@
   "paths": {
     "/api/v1/admin/clients": {
       "get": {
+        "description": "分页：page 0 基（Spring Data Pageable），首页 page=0；pageSize 每页条数。",
         "operationId": "AdminClients_listClients",
         "parameters": [
           {
-            "description": "页码，0 基（Spring Data Pageable）：首页 page=0。",
             "explode": false,
             "in": "query",
             "name": "page",
@@ -1200,7 +1200,6 @@
             }
           },
           {
-            "description": "每页条数。",
             "explode": false,
             "in": "query",
             "name": "pageSize",
@@ -1488,10 +1487,10 @@
     },
     "/api/v1/admin/tenants": {
       "get": {
+        "description": "分页：page 0 基（Spring Data Pageable），首页 page=0；pageSize 每页条数。",
         "operationId": "AdminTenants_listTenants",
         "parameters": [
           {
-            "description": "页码，0 基（Spring Data Pageable）：首页 page=0。",
             "explode": false,
             "in": "query",
             "name": "page",
@@ -1502,7 +1501,6 @@
             }
           },
           {
-            "description": "每页条数。",
             "explode": false,
             "in": "query",
             "name": "pageSize",
@@ -2457,6 +2455,7 @@
     },
     "/api/v1/tenants/{tenantId}/applications": {
       "get": {
+        "description": "分页：page 0 基（Spring Data Pageable），首页 page=0；pageSize 每页条数。",
         "operationId": "TenantApplications_listTenantApplications",
         "parameters": [
           {
@@ -2468,7 +2467,6 @@
             }
           },
           {
-            "description": "页码，0 基（Spring Data Pageable）：首页 page=0。",
             "explode": false,
             "in": "query",
             "name": "page",
@@ -2479,7 +2477,6 @@
             }
           },
           {
-            "description": "每页条数。",
             "explode": false,
             "in": "query",
             "name": "pageSize",
@@ -2695,6 +2692,7 @@
     },
     "/api/v1/tenants/{tenantId}/members": {
       "get": {
+        "description": "分页：page 0 基（Spring Data Pageable），首页 page=0；pageSize 每页条数。",
         "operationId": "TenantMembers_listTenantUsers",
         "parameters": [
           {
@@ -2706,7 +2704,6 @@
             }
           },
           {
-            "description": "页码，0 基（Spring Data Pageable）：首页 page=0。",
             "explode": false,
             "in": "query",
             "name": "page",
@@ -2717,7 +2714,6 @@
             }
           },
           {
-            "description": "每页条数。",
             "explode": false,
             "in": "query",
             "name": "pageSize",
@@ -3170,6 +3166,7 @@
     },
     "/api/v1/tenants/{tenantId}/roles": {
       "get": {
+        "description": "分页：page 0 基（Spring Data Pageable），首页 page=0；pageSize 每页条数。",
         "operationId": "TenantRoles_listSysRoles",
         "parameters": [
           {
@@ -3190,7 +3187,6 @@
             }
           },
           {
-            "description": "页码，0 基（Spring Data Pageable）：首页 page=0。",
             "explode": false,
             "in": "query",
             "name": "page",
@@ -3201,7 +3197,6 @@
             }
           },
           {
-            "description": "每页条数。",
             "explode": false,
             "in": "query",
             "name": "pageSize",
