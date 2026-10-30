@@ -506,7 +506,10 @@ type UpdateTenantRequest struct {
 
 // AdminClientsListClientsParams defines parameters for AdminClientsListClients.
 type AdminClientsListClientsParams struct {
-	Page     *int32 `form:"page,omitempty" json:"page,omitempty"`
+	// Page 页码，0 基（Spring Data Pageable）：首页 page=0。
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// PageSize 每页条数。
 	PageSize *int32 `form:"pageSize,omitempty" json:"pageSize,omitempty"`
 }
 
@@ -517,7 +520,10 @@ type AdminClientsSetClientStatusJSONBody struct {
 
 // AdminTenantsListTenantsParams defines parameters for AdminTenantsListTenants.
 type AdminTenantsListTenantsParams struct {
-	Page     *int32 `form:"page,omitempty" json:"page,omitempty"`
+	// Page 页码，0 基（Spring Data Pageable）：首页 page=0。
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// PageSize 每页条数。
 	PageSize *int32 `form:"pageSize,omitempty" json:"pageSize,omitempty"`
 }
 
@@ -548,13 +554,19 @@ type MeSwitchTenantParams struct {
 
 // TenantApplicationsListTenantApplicationsParams defines parameters for TenantApplicationsListTenantApplications.
 type TenantApplicationsListTenantApplicationsParams struct {
-	Page     *int32 `form:"page,omitempty" json:"page,omitempty"`
+	// Page 页码，0 基（Spring Data Pageable）：首页 page=0。
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// PageSize 每页条数。
 	PageSize *int32 `form:"pageSize,omitempty" json:"pageSize,omitempty"`
 }
 
 // TenantMembersListTenantUsersParams defines parameters for TenantMembersListTenantUsers.
 type TenantMembersListTenantUsersParams struct {
-	Page     *int32              `form:"page,omitempty" json:"page,omitempty"`
+	// Page 页码，0 基（Spring Data Pageable）：首页 page=0。
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// PageSize 每页条数。
 	PageSize *int32              `form:"pageSize,omitempty" json:"pageSize,omitempty"`
 	Status   *TenantMemberStatus `form:"status,omitempty" json:"status,omitempty"`
 }
@@ -573,8 +585,12 @@ type TenantMembersChangeTenantUserStatusJSONBody struct {
 // TenantRolesListSysRolesParams defines parameters for TenantRolesListSysRoles.
 type TenantRolesListSysRolesParams struct {
 	ClientId *string `form:"clientId,omitempty" json:"clientId,omitempty"`
-	Page     *int32  `form:"page,omitempty" json:"page,omitempty"`
-	PageSize *int32  `form:"pageSize,omitempty" json:"pageSize,omitempty"`
+
+	// Page 页码，0 基（Spring Data Pageable）：首页 page=0。
+	Page *int32 `form:"page,omitempty" json:"page,omitempty"`
+
+	// PageSize 每页条数。
+	PageSize *int32 `form:"pageSize,omitempty" json:"pageSize,omitempty"`
 }
 
 // TenantRoleMenusClearSysRoleMenusParams defines parameters for TenantRoleMenusClearSysRoleMenus.
